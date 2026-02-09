@@ -178,4 +178,4 @@ After adding dependencies, Gradle will automatically download them on the next b
 
 ## License
 
-MIT License - See the license in pom.xml for details.
+MIT License

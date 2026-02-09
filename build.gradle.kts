@@ -31,7 +31,7 @@ dependencies {
     
     // ===== STRINGS =====
     implementation("org.apache.commons:commons-text:1.14.0")
-    implementation("commons-beanutils:commons-beanutils:1.11.0")
+    implementation("commons-beanutils:commons-beanutils:1.9.4")
     
     // ===== ANNOTATIONS =====
     implementation("org.jetbrains:annotations:24.0.1")
