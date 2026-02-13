@@ -29,7 +29,7 @@ public class ThemeManager {
 
             @Override
             public void propertyChange(final PropertyChangeEvent evt) {
-                if (evt.getPropertyName() != "theme") {
+                if (!"theme".equals(evt.getPropertyName())) {
                     return;
                 }
 
