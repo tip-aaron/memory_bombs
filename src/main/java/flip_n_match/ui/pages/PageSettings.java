@@ -162,10 +162,14 @@ public class PageSettings extends Page {
                     UserSettings.getInstance().setDifficulty(gameplayTab.chosenDifficulty);
                 }
 
-                if (appearanceTab.dark && UserSettings.getInstance().getCurrentTheme() != GameTheme.DARK) {
-                    UserSettings.getInstance().setTheme(GameTheme.LIGHT);
-                } else if (!appearanceTab.dark && UserSettings.getInstance().getCurrentTheme() != GameTheme.LIGHT) {
-                    UserSettings.getInstance().setTheme(GameTheme.DARK);
+                if (appearanceTab.dark) {
+                    if (UserSettings.getInstance().getCurrentTheme() != GameTheme.DARK) {
+                        UserSettings.getInstance().setTheme(GameTheme.DARK);
+                    }
+                } else {
+                    if (UserSettings.getInstance().getCurrentTheme() != GameTheme.LIGHT) {
+                        UserSettings.getInstance().setTheme(GameTheme.LIGHT);
+                    }
                 }
 
                 if (audioTab.newVolume != UserSettings.getInstance().getVolume()) {

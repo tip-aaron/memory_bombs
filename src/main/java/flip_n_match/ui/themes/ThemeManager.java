@@ -29,8 +29,7 @@ public class ThemeManager {
 
             @Override
             public void propertyChange(final PropertyChangeEvent evt) {
-                System.out.println(evt);
-                if (evt.getPropertyName() != "theme") {
+                if (!"theme".equals(evt.getPropertyName())) {
                     return;
                 }
 
@@ -49,7 +48,7 @@ public class ThemeManager {
                     } else if (evt.getNewValue() == GameTheme.LIGHT) {
                         EventQueue.invokeLater(() -> {
                             FlatAnimatedLafChange.showSnapshot();
-                            // FlipMatchDarkTheme.setup();
+                            FlipMatchLightTheme.setup();
                             FlatLaf.updateUI();
                             FlatAnimatedLafChange.hideSnapshotWithAnimation();
                         });

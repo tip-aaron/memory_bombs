@@ -6,7 +6,7 @@ import flip_n_match.lib.Stopwatch;
 
 public class GameState {
     private final Stopwatch stopwatch;
-    private final String elapsedTime = "00:00.000";
+    private String elapsedTime = "00:00.000";
 
     private int[][] board;
 
