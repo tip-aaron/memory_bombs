@@ -15,12 +15,11 @@ import flip_n_match.config.GameTheme;
 import flip_n_match.config.UserSettings;
 
 public class ThemeManager {
-
     public static void manage() {
         if (UserSettings.getInstance().getCurrentTheme() == GameTheme.DARK) {
             FlipMatchDarkTheme.setup();
         } else if (UserSettings.getInstance().getCurrentTheme() == GameTheme.LIGHT) {
-
+            FlipMatchLightTheme.setup();
         }
 
         UserSettings.getInstance().addPropertyChangeListener(new PropertyChangeListener() {

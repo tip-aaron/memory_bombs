@@ -1,24 +1,12 @@
 package flip_n_match.ui.pages;
 
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -72,7 +60,7 @@ public class PageSettings extends Page {
         headerContainer.add(title);
         headerContainer.add(description);
 
-        contentContainer = new JPanel(new MigLayout("flowy, gapy 24px, insets 0, al center center", "[grow, fill]"));
+        contentContainer = new JPanel(new MigLayout("flowy, insets 0, al center center", "[grow, fill]"));
 
         tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
         gameplayTab = new GameplayTab();
@@ -80,12 +68,22 @@ public class PageSettings extends Page {
         controlsTab = new ControlsTab();
         audioTab = new AudioTab();
 
-        tabbedPane.addTab("Gameplay", gameplayTab);
-        tabbedPane.addTab("Appearance", appearanceTab);
-        tabbedPane.addTab("Controls", controlsTab);
-        tabbedPane.addTab("Audio", audioTab);
+        JScrollPane gameplayScroller = new JScrollPane(gameplayTab);
+        JScrollPane appearanceScroller = new JScrollPane(appearanceTab);
+        JScrollPane controlsScroller = new JScrollPane(controlsTab);
+        JScrollPane audioScroller = new JScrollPane(audioTab);
 
-        ctrlButtonsContainer = new JPanel(new MigLayout("flowx, insets 0, gapx 8px", "[]push[]8px[]"));
+        gameplayScroller.setBorder(null);
+        appearanceScroller.setBorder(null);
+        controlsScroller.setBorder(null);
+        audioScroller.setBorder(null);
+
+        tabbedPane.addTab("Gameplay", gameplayScroller);
+        tabbedPane.addTab("Appearance", appearanceScroller);
+        tabbedPane.addTab("Controls", controlsScroller);
+        tabbedPane.addTab("Audio", audioScroller);
+
+        ctrlButtonsContainer = new JPanel(new MigLayout("flowx, insets 0, gapx 8px", "[]push[]16px[]"));
         defaultsButton = new JButton("Defaults",
                 new SVGIconUIColor("reset-default.svg", 1, "foreground.muted"));
         cancelButton = new JButton("Cancel", new SVGIconUIColor("arrow-left.svg", 1, "foreground.muted"));
@@ -95,14 +93,18 @@ public class PageSettings extends Page {
         cancelButton.putClientProperty(FlatClientProperties.STYLE_CLASS, "error");
         saveButton.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
 
-        ctrlButtonsContainer.add(new JSeparator(JSeparator.HORIZONTAL), "cell 0 0 3, growx, gapbottom 16, wrap");
-        ctrlButtonsContainer.add(cancelButton);
+        ctrlButtonsContainer.add(cancelButton, "gapright 24px");
         ctrlButtonsContainer.add(defaultsButton);
         ctrlButtonsContainer.add(saveButton);
 
+        JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+
+        separator.setMinimumSize(new Dimension(separator.getMinimumSize().width, 8));
+
         add(headerContainer);
         add(contentContainer, "w ::720px, center");
-        contentContainer.add(tabbedPane, "h 250px::");
+        contentContainer.add(tabbedPane, "h 300px::, gapbottom 24px");
+        contentContainer.add(separator, "spanx, growx, gapbottom 16px");
         contentContainer.add(ctrlButtonsContainer);
 
         defaultsActionListener = new ActionListener() {
@@ -206,11 +208,18 @@ public class PageSettings extends Page {
     }
 
     private void addSectionHeader(final JPanel panel, final String text) {
+        final JPanel container = new JPanel(new MigLayout("fillx, wrap 1, insets 0", "[]", "[]4[]"));
         final JLabel label = new JLabel(text);
         label.putClientProperty("FlatLaf.styleClass", "h4"); // Use FlatLaf typography
         label.setForeground(UIManager.getColor("Accent.color")); // Use theme accent color
 
-        panel.add(label, "span, wrap, gaptop 10");
+        final JLabel desc = new JLabel("<html>If you are in-game, then some changes will only take effect after a new game.");
+
+        desc.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted small");
+
+        container.add(label);
+        container.add(desc);
+        panel.add(container, "span, wrap, gaptop 8, gapbottom 4");
     }
 
     private class GameplayTab extends JPanel {
@@ -228,9 +237,7 @@ public class PageSettings extends Page {
                 @Override
                 public void itemStateChanged(final ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
-                        final GameDifficulty selected = (GameDifficulty) e.getItem();
-
-                        chosenDifficulty = selected;
+                        chosenDifficulty = (GameDifficulty) e.getItem();
                         dirty = true;
                     }
                 }
@@ -241,7 +248,6 @@ public class PageSettings extends Page {
                 @Override
                 public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
                         final boolean isSelected, final boolean cellHasFocus) {
-
                     if (value instanceof final GameDifficulty gameDifficulty) {
                         setText(gameDifficulty.toDetailedString());
                     }

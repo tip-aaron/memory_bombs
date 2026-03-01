@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 public class Stopwatch {
     private Thread tickerThread;
     private volatile boolean running = false;
-    private AtomicLong totalNanoSeconds = new AtomicLong(0);
+    private final AtomicLong totalNanoSeconds = new AtomicLong(0);
 
     private long startTimeNano = 0;
     private long accTimeNano = 0;
@@ -73,8 +73,6 @@ public class Stopwatch {
         final long minutes = (totalMillis / 60_000);
         final long seconds = (totalMillis) / 1_000 % 60;
         final long millis = totalMillis % 1_000;
-
-        System.out.println(minutes + " " + seconds + " " + totalMillis);
 
         return String.format("%02d:%02d.%03d", minutes, seconds, millis);
     }
