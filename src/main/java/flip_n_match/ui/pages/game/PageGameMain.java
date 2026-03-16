@@ -26,6 +26,12 @@ public class PageGameMain extends Page {
 
         add(header, "grow, wrap");
         add(gamePanel);
+    }
+
+    @Override
+    public void open() {
+        header.open();
+        gamePanel.open();
 
         GameEventMessenger.getInstance().addGameOverListener(isWin -> SwingUtilities.invokeLater(() -> {
             gamePanel.refresh();
@@ -39,12 +45,6 @@ public class PageGameMain extends Page {
 
             Navigator.navigate(PageStartMenu.class);
         }));
-    }
-
-    @Override
-    public void open() {
-        header.open();
-        gamePanel.open();
     }
 
     @Override
