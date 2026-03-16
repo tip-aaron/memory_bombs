@@ -1,11 +1,14 @@
 package flip_n_match.lib;
 
+import lombok.Getter;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class Stopwatch {
     private Thread tickerThread;
+    @Getter
     private volatile boolean running = false;
     private final AtomicLong totalNanoSeconds = new AtomicLong(0);
 

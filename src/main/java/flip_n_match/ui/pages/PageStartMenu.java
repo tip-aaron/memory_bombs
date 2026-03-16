@@ -1,6 +1,5 @@
 package flip_n_match.ui.pages;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 
@@ -15,16 +14,14 @@ import com.formdev.flatlaf.FlatClientProperties;
 import flip_n_match.App;
 import flip_n_match.constants.Metadata;
 import flip_n_match.ui.icons.SVGIconUIColor;
+import flip_n_match.ui.pages.game.PageGameMain;
 import flip_n_match.ui.system.Navigator;
 import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;
 
 public class PageStartMenu extends Page {
     private JPanel headerContainer;
-    private JLabel title;
-    private JLabel description;
 
-    private JPanel buttonsContainer;
     private JButton playButton;
     private JButton settingsButton;
     private JButton exitButton;
@@ -38,8 +35,8 @@ public class PageStartMenu extends Page {
         setLayout(new MigLayout("flowx, wrap, gapy 64, insets 0, al center center", "[grow, fill]"));
 
         headerContainer = new JPanel(new MigLayout("flowy, gapy 8, insets 0, al center center", "[grow, fill]"));
-        title = new JLabel(Metadata.APP_TITLE.toUpperCase(Locale.ENGLISH));
-        description = new JLabel("<html>Flip the cards and match the numbers... or go <b>BOOM</b>!</html>");
+        JLabel title = new JLabel(Metadata.APP_TITLE.toUpperCase(Locale.ENGLISH));
+        JLabel description = new JLabel("<html>Flip the cards and match the numbers... or go <b>BOOM</b>!</html>");
 
         title.putClientProperty(FlatClientProperties.STYLE_CLASS, "h00");
         title.setHorizontalAlignment(JLabel.CENTER);
@@ -49,7 +46,7 @@ public class PageStartMenu extends Page {
         headerContainer.add(title);
         headerContainer.add(description);
 
-        buttonsContainer = new JPanel(
+        JPanel buttonsContainer = new JPanel(
                 new MigLayout("flowx, wrap, insets 0, gap 16, al center center", "[grow, fill, ::320px]"));
         playButton = new JButton("Play", new SVGIconUIColor("play.svg", 1, "foreground.background"));
         settingsButton = new JButton("Settings", new SVGIconUIColor("settings.svg", 1, "foreground.background"));
@@ -66,29 +63,14 @@ public class PageStartMenu extends Page {
         add(headerContainer, "grow");
         add(buttonsContainer, "grow");
 
-        playActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                Navigator.navigate(PageGame.class);
-            }
-        };
+        playActionListener = e -> Navigator.navigate(PageGameMain.class);
+        settingsActionListener = e -> Navigator.navigate(PageSettings.class);
+        exitActionListener = e -> {
+            final int res = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(headerContainer),
+                    "Are you sure you want to exit the game?");
 
-        settingsActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                Navigator.navigate(PageSettings.class);
-            }
-        };
-
-        exitActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final int res = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(headerContainer),
-                        "Are you sure you want to exit the game?");
-
-                if (res == 0) {
-                    App.close();
-                }
+            if (res == 0) {
+                App.close();
             }
         };
     }

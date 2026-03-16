@@ -17,7 +17,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle(String.format("%s v%s", Metadata.APP_TITLE, Metadata.VERSION));
 
-        getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
+        //getRootPane().putClientProperty(FlatClientProperties.FULL_WINDOW_CONTENT, true);
 
         PageHandler.install(this);
 

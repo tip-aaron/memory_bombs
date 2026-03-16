@@ -26,6 +26,10 @@ public class AllPages {
         getInstance().pagesMap.clear();
     }
 
+    public static void removePage(final Class<? extends Page> cls) {
+        getInstance().pagesMap.remove(cls);
+    }
+
     public static void initPage(final Page page) {
         SwingUtilities.invokeLater(() -> {
             page.init();
