@@ -51,11 +51,14 @@ public class PageGameMain extends Page {
     public void close() {
         header.close();
         gamePanel.close();
+
+        GameEventMessenger.getInstance().removeAllListeners();
     }
 
     @Override
     public void destroy() {
         header.destroy();
         gamePanel.destroy();
+        GameEventMessenger.getInstance().removeAllListeners();
     }
 }

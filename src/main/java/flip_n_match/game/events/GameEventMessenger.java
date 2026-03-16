@@ -23,6 +23,10 @@ public class GameEventMessenger {
         gameOverListeners.add(listener);
     }
 
+    public void removeAllListeners() {
+        gameOverListeners.clear();
+    }
+
     // Broadcast the event to all listeners
     public void triggerGameOver(boolean isWin) {
         gameOverListeners.forEach(listener -> listener.accept(isWin));
