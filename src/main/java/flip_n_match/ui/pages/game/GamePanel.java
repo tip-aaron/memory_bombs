@@ -3,6 +3,7 @@ package flip_n_match.ui.pages.game;
 import com.formdev.flatlaf.FlatClientProperties;
 import flip_n_match.config.UserSettings;
 import flip_n_match.game.*;
+import flip_n_match.ui.icons.SVGIconUIColor;
 import lombok.Builder;
 import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
@@ -12,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
 
 @Builder
 @Getter
@@ -24,9 +26,11 @@ class ButtonTile {
 public class GamePanel extends JPanel {
     private final GameState gameState;
     private ButtonTile[][] buttonTiles;
+    private final HashMap<String, SVGIconUIColor> cachedIcons;
 
     public GamePanel(GameState gameState) {
         this.gameState = gameState;
+        this.cachedIcons = new HashMap<String, SVGIconUIColor>();
     }
 
     public void buildGrid() {
@@ -38,7 +42,7 @@ public class GamePanel extends JPanel {
 
         buttonTiles = new ButtonTile[board.getRows()][board.getCols()];
 
-        setLayout(new MigLayout(String.format("insets 0 8, gap 8, wrap %d, al center top", board.getCols())));
+        setLayout(new MigLayout(String.format("insets 0 8, gap 8, wrap %d, al center top", board.getCols()), "", ""));
 
         createButtonTiles(board.getRows(), board.getCols());
     }
@@ -71,7 +75,7 @@ public class GamePanel extends JPanel {
 
                 buttonTiles[r][c] = buttonTile;
 
-                add(btn, "w 32!, h 32!");
+                add(btn, "w 56!, h 56!");
             }
         }
 
@@ -94,6 +98,7 @@ public class GamePanel extends JPanel {
 
                 if (tile == null) {
                     btn.setText("");
+                    btn.setIcon(null);
                     btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "hidden");
                     btn.setEnabled(true);
 
@@ -106,7 +111,14 @@ public class GamePanel extends JPanel {
 
                         switch (tile) {
                             case Tile.Explosive ignored -> {
-                                btn.setText("💣");
+                                cachedIcons.putIfAbsent("bomb.svg", new SVGIconUIColor(
+                                        "bomb.svg",
+                                        1f,
+                                        "color.error"
+                                ));
+                                SVGIconUIColor icon = cachedIcons.get("bomb.svg");
+
+                                btn.setIcon(icon);
                                 btn.setEnabled(false);
                             }
                             case Tile.ClueProvider clue when !clue.isEmpty() -> {
@@ -115,23 +127,44 @@ public class GamePanel extends JPanel {
                             }
                             case Tile.Matchable matchable -> {
                                 if (matchable.getIsMatched()) {
-                                    btn.setText(matchable.getMatchId());
+                                    if (btn.getIcon() != null && btn.getIcon() instanceof SVGIconUIColor icon) {
+                                        icon.setColorKey("foreground.success");
+                                    } else {
+                                        cachedIcons.putIfAbsent(matchable.getMatchId(), new SVGIconUIColor(
+                                                matchable.getMatchId(),
+                                                1f,
+                                                "foreground.success"
+                                        ));
+                                        SVGIconUIColor icon = cachedIcons.get(matchable.getMatchId());
+                                        btn.setIcon(icon);
+                                    }
+
                                     btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "matched");
                                     btn.setEnabled(false);
                                 } else if (matchable.isSymbolRevealed()) {
-                                    btn.setText(matchable.getMatchId());
+                                    if (btn.getIcon() != null && btn.getIcon() instanceof SVGIconUIColor icon) {
+                                        icon.setColorKey("foreground.revealed");
+                                    } else {
+                                        cachedIcons.putIfAbsent(matchable.getMatchId(), new SVGIconUIColor(
+                                                matchable.getMatchId(),
+                                                1f,
+                                                "foreground.revealed"
+                                        ));
+                                        SVGIconUIColor icon = cachedIcons.get(matchable.getMatchId());
+                                        btn.setIcon(icon);
+                                    }
                                     btn.setEnabled(false);
                                 } else {
-                                    btn.setText("");
+                                    btn.setIcon(null);
                                     btn.setEnabled(true);
                                 }
                             }
-                            case Tile.ClueProvider ignored -> {
-                                btn.setText("");
+                            case SpecialTile ignored -> {
+                                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted");
                                 btn.setEnabled(false);
                             }
-                            case SpecialTile specialTile -> {
-                                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted");
+                            case Tile.ClueProvider ignored -> {
+                                btn.setText("");
                                 btn.setEnabled(false);
                             }
                             default -> {}

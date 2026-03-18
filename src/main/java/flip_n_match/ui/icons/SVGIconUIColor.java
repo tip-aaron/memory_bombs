@@ -1,14 +1,18 @@
 package flip_n_match.ui.icons;
 
-import java.awt.Color;
-
-import javax.swing.UIManager;
-
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.ColorFunctions;
-
 import flip_n_match.App;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+import javax.swing.*;
+import java.awt.*;
+
+@Setter
+@Getter
+@ToString
 public class SVGIconUIColor extends FlatSVGIcon {
     public static final String ICONS_BASE_PATH = App.class.getPackageName().replace('.', '/') + "/ui/assets/icons/";
     private float alpha;
@@ -29,23 +33,9 @@ public class SVGIconUIColor extends FlatSVGIcon {
             if (uiColor != null) {
                 return getAlpha() == 1 ? uiColor : ColorFunctions.fade(uiColor, getAlpha());
             }
+
             return color;
         }));
     }
 
-    public float getAlpha() {
-        return alpha;
-    }
-
-    public String getColorKey() {
-        return colorKey;
-    }
-
-    public void setAlpha(final float alpha) {
-        this.alpha = alpha;
-    }
-
-    public void setColorKey(final String colorKey) {
-        this.colorKey = colorKey;
-    }
 }

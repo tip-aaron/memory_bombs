@@ -1,6 +1,5 @@
 package flip_n_match.ui.pages.game;
 
-import flip_n_match.config.UserSettings;
 import flip_n_match.game.GameState;
 import flip_n_match.game.events.GameEventMessenger;
 import flip_n_match.ui.pages.PageStartMenu;
@@ -19,8 +18,8 @@ public class PageGameMain extends Page {
         setLayout(new MigLayout("gapy 64px, al center top", "[grow, fill]"));
 
         gameState = new GameState(
-                str -> header.setStopwatchText(str),
-                () -> gamePanel.refresh());
+                str -> SwingUtilities.invokeLater(() -> header.setStopwatchText(str)),
+                () -> SwingUtilities.invokeLater(() -> gamePanel.refresh()));
         header = new Header();
         gamePanel = new GamePanel(gameState);
 

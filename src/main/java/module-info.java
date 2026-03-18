@@ -7,7 +7,9 @@ module flip_n_match {
     requires com.formdev.flatlaf.extras;
     requires com.miglayout.swing;
     requires lombok;
-    requires org.jetbrains.annotations;
+    requires io.github.classgraph;
+    requires static org.jetbrains.annotations;
+
 
     exports flip_n_match;
 }
