@@ -1,15 +1,15 @@
 package flip_n_match.game;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.function.Consumer;
-import javax.swing.Timer; // Added for the UI delay
-
 import flip_n_match.game.events.GameEventMessenger;
 import flip_n_match.lib.Stopwatch;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.function.Consumer;
 
 public class GameState {
     @Getter
@@ -114,16 +114,21 @@ public class GameState {
                     case Tile.ClueProvider clue when clue.isEmpty() -> {
                         floodFill(coordinate);
                     }
-                    case SpecialTile special -> special.activateSpecialAbility();
                     default -> {
                     }
                 }
             }
             case TileStatus.REVEALED -> {
-                if (clickedTile instanceof Tile.Matchable matchable && !matchable.getIsMatched()
-                        && !matchable.isSymbolRevealed()) {
-                    matchable.setSymbolRevealed(true);
-                    handleMatchable(matchable);
+                switch (clickedTile) {
+                    case Tile.Matchable matchable when !matchable.getIsMatched() && !matchable.isSymbolRevealed() -> {
+                        matchable.setSymbolRevealed(true);
+                        handleMatchable(matchable);
+                    }
+                    case SpecialTile specialTile -> {
+                        specialTile.activateSpecialAbility();
+                    }
+                    default -> {
+                    }
                 }
             }
             default -> {

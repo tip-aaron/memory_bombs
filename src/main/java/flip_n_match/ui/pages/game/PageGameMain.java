@@ -18,26 +18,13 @@ public class PageGameMain extends Page {
         setLayout(new MigLayout("gapy 64px, al center top", "[grow, fill]"));
 
         gameState = new GameState(
-                str -> header.setStopwatchText(str),
-                () -> gamePanel.refresh());
+                str -> SwingUtilities.invokeLater(() -> header.setStopwatchText(str)),
+                () -> SwingUtilities.invokeLater(() -> gamePanel.refresh()));
         header = new Header();
         gamePanel = new GamePanel(gameState);
 
         add(header, "grow, wrap");
         add(gamePanel);
-
-        GameEventMessenger.getInstance().addGameOverListener(isWin -> SwingUtilities.invokeLater(() -> {
-            gamePanel.refresh();
-
-            String msg = isWin ? "You Won! Amazing job." : "Game Over! You hit a mine.";
-            JOptionPane.showMessageDialog(this, msg, "Game Finished", JOptionPane.INFORMATION_MESSAGE);
-
-            gameState.clearAndStop();
-            // TODO: Proper clear
-            gameState.initializeGame(0, 0, 0); // Hacky clear, or add a nullify method to GameState
-
-            Navigator.navigate(PageStartMenu.class);
-        }));
     }
 
     @Override

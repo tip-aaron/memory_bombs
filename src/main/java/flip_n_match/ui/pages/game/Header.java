@@ -1,11 +1,6 @@
 package flip_n_match.ui.pages.game;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.formdev.flatlaf.FlatClientProperties;
-
 import flip_n_match.config.UserSettings;
 import flip_n_match.constants.Metadata;
 import flip_n_match.ui.icons.SVGIconUIColor;
@@ -13,6 +8,7 @@ import flip_n_match.ui.pages.PageGameMenu;
 import flip_n_match.ui.system.Navigator;
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.*;
 import java.awt.event.ActionListener;
 
 public class Header extends JPanel {
@@ -36,11 +32,11 @@ public class Header extends JPanel {
 
         menuBtn.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
 
-        add(titleText, "");
-        add(difficultyText, "gapx 16px");
-        add(stopwatchText, "gapx 16px");
-        add(mineCountText, "gapx 16px");
-        add(menuBtn, "");
+        add(titleText, "gapright 64px");
+        add(difficultyText, "gapx 8px");
+        add(stopwatchText, "gapx 8px");
+        add(mineCountText, "gapx 8px");
+        add(menuBtn, "gapleft 64px");
     }
 
     void setStopwatchText(String text) {
