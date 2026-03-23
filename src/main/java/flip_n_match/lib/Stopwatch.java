@@ -71,6 +71,10 @@ public class Stopwatch {
         onTick.accept(formatTime(0));
     }
 
+    public synchronized long getElapsedSeconds() {
+        return totalNanoSeconds.get();
+    }
+
     private String formatTime(final long nanos) {
         final long totalMillis = nanos / 1_000_000;
         final long minutes = (totalMillis / 60_000);

@@ -2,10 +2,13 @@ package flip_n_match.ui.pages.game;
 
 import flip_n_match.game.GameState;
 import flip_n_match.game.events.GameEventMessenger;
+import flip_n_match.lib.Scorer;
+import flip_n_match.ui.pages.PageLeaderboard;
 import flip_n_match.ui.pages.PageStartMenu;
 import flip_n_match.ui.system.Navigator;
 import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -35,15 +38,56 @@ public class PageGameMain extends Page {
         GameEventMessenger.getInstance().addGameOverListener(isWin -> SwingUtilities.invokeLater(() -> {
             gamePanel.refresh();
 
-            String msg = isWin ? "You Won! Amazing job." : "Game Over! You hit a mine.";
-            JOptionPane.showMessageDialog(this, msg, "Game Finished", JOptionPane.INFORMATION_MESSAGE);
+            if (isWin) {
+                long finalTimeRaw = gameState.getStopwatch().getElapsedSeconds();
 
-            gameState.clearAndStop();
-            // TODO: Proper clear
-            gameState.initializeGame(0, 0, 0); // Hacky clear, or add a nullify method to GameState
+                String playerName = JOptionPane.showInputDialog(
+                        this,
+                        "You Won! Amazing job.\nEnter your name to save your score:",
+                        "Victory!",
+                        JOptionPane.PLAIN_MESSAGE
+                );
 
-            Navigator.navigate(PageStartMenu.class);
+                if (playerName == null || playerName.trim().isEmpty()) {
+                    java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+                    playerName = "Player_" + java.time.LocalDateTime.now().format(dtf);
+                }
+
+                Scorer.saveScore(playerName, finalTimeRaw);
+
+                String rankMsg = getRankMsg(playerName, finalTimeRaw);
+                JOptionPane.showMessageDialog(this, "Score saved for " + playerName + "!" + rankMsg, "Saved", JOptionPane.INFORMATION_MESSAGE);
+
+                gameState.clearAndStop();
+                gameState.initializeGame(0, 0, 0);
+
+                Navigator.navigate(PageLeaderboard.class);
+            } else {
+                JOptionPane.showMessageDialog(this, "Game Over! You hit a mine.", "Game Finished", JOptionPane.INFORMATION_MESSAGE);
+
+                gameState.clearAndStop();
+                gameState.initializeGame(0, 0, 0);
+
+                Navigator.navigate(PageStartMenu.class);
+            }
         }));
+    }
+
+    private static @NotNull String getRankMsg(String playerName, long finalTimeRaw) {
+        java.util.List<Scorer.ScoreEntry> scores = Scorer.getSortedScores();
+        int rank = -1;
+
+        for (int i = 0; i < scores.size(); i++) {
+            Scorer.ScoreEntry entry = scores.get(i);
+
+            // Match name and time to find their exact entry
+            if (entry.name().equals(playerName) && entry.timeValue() == finalTimeRaw) {
+                rank = i + 1;
+                break;
+            }
+        }
+
+        return (rank > 0) ? "\nYou are currently in place #" + rank + "!" : "";
     }
 
     @Override

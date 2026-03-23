@@ -47,7 +47,7 @@ public class PageGameMenu extends Page {
 
         // Reusing the SVGIconUIColor from your template, feel free to change the file names if you have specific icons
         resumeButton = new JButton("Resume", new SVGIconUIColor("play.svg", 1, "foreground.background"));
-        exitButton = new JButton("Exit", new SVGIconUIColor("logout.svg", 1, "foreground.background"));
+        exitButton = new JButton("Back to Main Menu", new SVGIconUIColor("logout.svg", 1, "foreground.background"));
 
         resumeButton.setHorizontalAlignment(JButton.CENTER);
         exitButton.setHorizontalAlignment(JButton.CENTER);
