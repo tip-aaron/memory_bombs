@@ -1,6 +1,5 @@
 package flip_n_match.ui.pages.game;
 
-import flip_n_match.config.UserSettings;
 import flip_n_match.game.GameState;
 import flip_n_match.game.events.GameEventMessenger;
 import flip_n_match.ui.pages.PageStartMenu;
@@ -45,6 +44,19 @@ public class PageGameMain extends Page {
     public void open() {
         header.open();
         gamePanel.open();
+
+        GameEventMessenger.getInstance().addGameOverListener(isWin -> SwingUtilities.invokeLater(() -> {
+            gamePanel.refresh();
+
+            String msg = isWin ? "You Won! Amazing job." : "Game Over! You hit a mine.";
+            JOptionPane.showMessageDialog(this, msg, "Game Finished", JOptionPane.INFORMATION_MESSAGE);
+
+            gameState.clearAndStop();
+            // TODO: Proper clear
+            gameState.initializeGame(0, 0, 0); // Hacky clear, or add a nullify method to GameState
+
+            Navigator.navigate(PageStartMenu.class);
+        }));
     }
 
     @Override
