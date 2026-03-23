@@ -7,10 +7,14 @@ import io.github.classgraph.ScanResult;
 import java.util.*;
 
 public class BoardFactory {
-    public static Board createBoard(int rows, int cols, int mineCount) {
+    public static Board createEmptyBoard(int rows, int cols) {
+        return new Board(rows, cols);
+    }
+
+    public static Board createBoard(int rows, int cols, int mineCount, Coordinate firstClick) {
         Board board = new Board(rows, cols);
 
-        Set<Coordinate> mineCoordinates = placeMines(rows, cols, mineCount);
+        Set<Coordinate> mineCoordinates = placeMines(rows, cols, mineCount, firstClick);
         List<Coordinate> memoryCoordinates = new ArrayList<>();
 
         for (int r = 0; r < rows; r++) {
@@ -91,15 +95,41 @@ public class BoardFactory {
         return icons;
     }
 
-    private static Set<Coordinate> placeMines(int rows, int cols, int mineCount) {
+    private static Set<Coordinate> placeMines(int rows, int cols, int mineCount, Coordinate firstClick) {
         Set<Coordinate> mines = new HashSet<>();
         Random random = new Random();
+        Set<Coordinate> safeZone = new HashSet<>();
 
-        while (mines.size() < mineCount) {
+        if (firstClick != null) {
+            for (int r = -1; r <= 1; r++) {
+                for (int c = -1; c <= 1; c++) {
+                    safeZone.add(new Coordinate(firstClick.getRow() + r, firstClick.getCol() + c));
+                }
+            }
+        }
+
+        int maxAvailableCells = (rows * cols) - safeZone.size();
+
+        if (mineCount > maxAvailableCells) {
+            safeZone.clear();
+
+            if (firstClick != null) {
+                safeZone.add(firstClick);
+            }
+
+            maxAvailableCells = (rows * cols) - safeZone.size();
+        }
+
+        int safeMineCount = Math.min(mineCount, maxAvailableCells);
+
+        while (mines.size() < safeMineCount) {
             int r = random.nextInt(rows);
             int c = random.nextInt(cols);
+            Coordinate candidate = new Coordinate(r, c);
 
-            mines.add(new Coordinate(r, c));
+            if (!safeZone.contains(candidate)) {
+                mines.add(candidate);
+            }
         }
 
         return mines;

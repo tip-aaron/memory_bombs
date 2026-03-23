@@ -30,6 +30,12 @@ public class GameState {
     @Getter
     private boolean isGameOver = false;
 
+    private int pendingRows;
+    private int pendingCols;
+    private int pendingMines;
+
+    private boolean isFirstClick = true;
+
     @Setter
     private Runnable onBoardUpated;
 
@@ -56,7 +62,11 @@ public class GameState {
     }
 
     public void initializeGame(int rows, int cols, int mineCount) {
-        this.board = BoardFactory.createBoard(rows, cols, mineCount);
+        this.board = BoardFactory.createEmptyBoard(rows, cols);
+        this.isFirstClick = true;
+        this.pendingRows = rows;
+        this.pendingCols = cols;
+        this.pendingMines = mineCount;
         this.firstFlippedTile = null;
         this.inputLocked = false;
         this.isGameOver = false;
@@ -73,7 +83,7 @@ public class GameState {
     }
 
     public void onTileRightClicked(Coordinate coordinate) {
-        if (isGameOver || inputLocked) return;
+        if (isGameOver || inputLocked || isFirstClick) return;
 
         Tile clickedTile = board.getTile(coordinate);
 
@@ -91,14 +101,16 @@ public class GameState {
             return;
         }
 
+        if (isFirstClick) {
+            this.board = BoardFactory.createBoard(pendingRows, pendingCols, pendingMines, coordinate);
+            this.isFirstClick = false;
+            start();
+        }
+
         Tile clickedTile = board.getTile(coordinate);
 
         if (clickedTile == null) {
             return;
-        }
-
-        if (!stopwatch.isRunning()) {
-            start();
         }
 
         if (clickedTile.getStatus() == TileStatus.FLAGGED) {
@@ -111,9 +123,7 @@ public class GameState {
 
                 switch (clickedTile) {
                     case Tile.Explosive bomb -> handleExplosive(bomb);
-                    case Tile.ClueProvider clue when clue.isEmpty() -> {
-                        floodFill(coordinate);
-                    }
+                    case Tile.ClueProvider clue when clue.isEmpty() -> floodFill(coordinate);
                     default -> {
                     }
                 }
@@ -124,9 +134,7 @@ public class GameState {
                         matchable.setSymbolRevealed(true);
                         handleMatchable(matchable);
                     }
-                    case SpecialTile specialTile -> {
-                        specialTile.activateSpecialAbility();
-                    }
+                    case SpecialTile specialTile -> specialTile.activateSpecialAbility();
                     default -> {
                     }
                 }
