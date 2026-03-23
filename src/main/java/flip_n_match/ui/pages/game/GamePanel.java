@@ -75,7 +75,7 @@ public class GamePanel extends JPanel {
 
                 buttonTiles[r][c] = buttonTile;
 
-                add(btn, "w 56!, h 56!");
+                add(btn, "w 32!, h 32!");
             }
         }
 
