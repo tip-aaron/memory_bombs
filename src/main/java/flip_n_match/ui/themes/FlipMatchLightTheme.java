@@ -9,6 +9,7 @@ public class FlipMatchLightTheme extends FlatLightLaf {
         installLafInfo(NAME, FlipMatchLightTheme.class);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setup() {
         return setup(new FlipMatchLightTheme());
     }

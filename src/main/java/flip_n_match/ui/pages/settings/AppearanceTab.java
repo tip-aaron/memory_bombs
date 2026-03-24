@@ -1,7 +1,7 @@
 package flip_n_match.ui.pages.settings;
 
-import flip_n_match.config.GameTheme;
-import flip_n_match.config.UserSettings;
+import flip_n_match.game.settings.GameTheme;
+import flip_n_match.game.settings.UserSettings;
 import flip_n_match.ui.icons.SVGIconUIColor;
 
 import javax.swing.*;
@@ -43,28 +43,28 @@ public class AppearanceTab extends ASettingsTab {
 
     @Override
     public boolean isDirty() {
-        return chosenTheme != UserSettings.getInstance().getCurrentTheme();
+        return chosenTheme != UserSettings.getInstance().getAppearance().theme().get();
     }
 
     @Override
     public void applyChanges() {
         if (isDirty()) {
-            UserSettings.getInstance().setTheme(chosenTheme);
+            UserSettings.getInstance().getAppearance().theme().set(chosenTheme);
         }
     }
 
     @Override
     public void revertChanges() {
-        chosenTheme = UserSettings.getInstance().getCurrentTheme();
+        chosenTheme = UserSettings.getInstance().getAppearance().theme().get();
 
         themeJComboBox.setSelectedItem(chosenTheme);
     }
 
     @Override
     public void loadDefaults() {
-        chosenTheme = UserSettings.getInstance().getDEFAULT_THEME();
+        chosenTheme = UserSettings.getInstance().getAppearance().theme().getDefaultValue();
 
-        themeJComboBox.setSelectedItem(UserSettings.getInstance().getDEFAULT_THEME());
+        themeJComboBox.setSelectedItem(chosenTheme);
     }
 
     static class ThemeJComboBoxRenderer extends DefaultListCellRenderer {

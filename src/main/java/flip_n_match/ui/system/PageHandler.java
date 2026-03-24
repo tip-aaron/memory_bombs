@@ -31,9 +31,7 @@ public class PageHandler {
         showDefaultPage();
         final Page page = AllPages.getPage(PageStartMenu.class);
 
-        SwingUtilities.invokeLater(() -> {
-            showPage(page);
-        });
+        SwingUtilities.invokeLater(() -> showPage(page));
     }
 
     public static void showDefaultPage() {

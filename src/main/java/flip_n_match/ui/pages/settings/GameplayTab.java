@@ -1,7 +1,7 @@
 package flip_n_match.ui.pages.settings;
 
-import flip_n_match.config.GameDifficulty;
-import flip_n_match.config.UserSettings;
+import flip_n_match.game.settings.GameDifficulty;
+import flip_n_match.game.settings.UserSettings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,26 +42,26 @@ public class GameplayTab extends ASettingsTab {
 
     @Override
     public boolean isDirty() {
-        return chosenDifficulty != UserSettings.getInstance().getCurrentDifficulty();
+        return chosenDifficulty != UserSettings.getInstance().getGameplay().difficulty().get();
     }
 
     @Override
     public void applyChanges() {
         if (isDirty()) {
-            UserSettings.getInstance().setDifficulty(chosenDifficulty);
+            UserSettings.getInstance().getGameplay().difficulty().set(chosenDifficulty);
         }
     }
 
     @Override
     public void revertChanges() {
-        chosenDifficulty = UserSettings.getInstance().getCurrentDifficulty();
+        chosenDifficulty = UserSettings.getInstance().getGameplay().difficulty().get();
 
         difficultyJComboBox.setSelectedItem(chosenDifficulty);
     }
 
     @Override
     public void loadDefaults() {
-        chosenDifficulty = UserSettings.getInstance().getDEFAULT_DIFFICULTY();
+        chosenDifficulty = UserSettings.getInstance().getGameplay().difficulty().getDefaultValue();
 
         difficultyJComboBox.setSelectedItem(chosenDifficulty);
     }

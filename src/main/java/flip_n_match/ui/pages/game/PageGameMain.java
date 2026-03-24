@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class PageGameMain extends Page {
-    GameState gameState;
+    final GameState gameState;
     Header header;
     GamePanel gamePanel;
 

@@ -6,8 +6,6 @@ public class Navigator {
     public static void navigate(final Class<? extends Page> page) {
         final Page pageInstance = AllPages.getPage(page);
 
-        SwingUtilities.invokeLater(() -> {
-            PageHandler.showPage(pageInstance);
-        });
+        SwingUtilities.invokeLater(() -> PageHandler.showPage(pageInstance));
     }
 }

@@ -1,4 +1,4 @@
-package flip_n_match.config;
+package flip_n_match.game.settings;
 
 import lombok.Getter;
 
@@ -19,6 +19,6 @@ public enum GameDifficulty {
     }
 
     public String toDetailedString() {
-        return String.format("%s (%dx%d), %d mines", this.toString(), rows, cols, mineCount);
+        return String.format("%s (%dx%d), %d mines", this, rows, cols, mineCount);
     }
 }

@@ -1,7 +1,5 @@
 package flip_n_match.game;
 
-import lombok.Getter;
-
 public class MemoryTile extends Tile implements Tile.Matchable, Tile.ClueProvider {
     private final String matchId;
     private boolean matched;

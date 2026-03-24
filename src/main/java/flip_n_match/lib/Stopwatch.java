@@ -2,12 +2,14 @@ package flip_n_match.lib;
 
 import lombok.Getter;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class Stopwatch {
-    private Thread tickerThread;
+    private Timer timer;
+
     @Getter
     private volatile boolean running = false;
     private final AtomicLong totalNanoSeconds = new AtomicLong(0);
@@ -29,26 +31,24 @@ public class Stopwatch {
         running = true;
         startTimeNano = System.nanoTime();
 
-        tickerThread = new Thread(() -> {
-            while (running) {
+        // Create a new daemon Timer (true = daemon thread)
+        timer = new Timer(true);
+
+        // Schedule a task to run immediately (0 delay) and repeat every 50ms
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
                 final long currentDuration = System.nanoTime() - startTimeNano;
                 final long totalTime = accTimeNano + currentDuration;
+
                 totalNanoSeconds.set(totalTime);
-                final String timeText = formatTime(totalTime);
-
-                onTick.accept(timeText);
-
-                try {
-                    Thread.sleep(50);
-                } catch (final InterruptedException err) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                onTick.accept(formatTime(totalTime));
             }
-        });
+        }, 0, 50);
+    }
 
-        tickerThread.setDaemon(true);
-        tickerThread.start();
+    public long getElapsedSeconds() {
+        return totalNanoSeconds.get();
     }
 
     public synchronized void stop() {
@@ -60,25 +60,28 @@ public class Stopwatch {
         final long now = System.nanoTime();
         accTimeNano += (now - startTimeNano);
 
-        tickerThread.interrupt();
+        // Cancel the timer to stop the background thread
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
 
+        // Lock in the exact final nanoseconds
+        totalNanoSeconds.set(accTimeNano);
         onTick.accept(formatTime(accTimeNano));
     }
 
     public synchronized void reset() {
         stop();
         accTimeNano = 0;
+        totalNanoSeconds.set(0);
         onTick.accept(formatTime(0));
-    }
-
-    public synchronized long getElapsedSeconds() {
-        return totalNanoSeconds.get();
     }
 
     private String formatTime(final long nanos) {
         final long totalMillis = nanos / 1_000_000;
         final long minutes = (totalMillis / 60_000);
-        final long seconds = (totalMillis) / 1_000 % 60;
+        final long seconds = (totalMillis / 1_000) % 60;
         final long millis = totalMillis % 1_000;
 
         return String.format("%02d:%02d.%03d", minutes, seconds, millis);

@@ -37,11 +37,11 @@ public class GameState {
     private boolean isFirstClick = true;
 
     @Setter
-    private Runnable onBoardUpated;
+    private Runnable onBoardUpdated;
 
     public GameState(Consumer<String> stopwatchListener, Runnable onBoardUpated) {
         this.stopwatch = new Stopwatch(stopwatchListener);
-        this.onBoardUpated = onBoardUpated;
+        this.onBoardUpdated = onBoardUpated;
     }
 
     public void pauseGame() {
@@ -82,7 +82,7 @@ public class GameState {
         this.stopwatch.reset();
     }
 
-    public void onTileRightClicked(Coordinate coordinate) {
+    public void onTileFlag(Coordinate coordinate) {
         if (isGameOver || inputLocked || isFirstClick) return;
 
         Tile clickedTile = board.getTile(coordinate);
@@ -96,7 +96,7 @@ public class GameState {
         }
     }
 
-    public void onTileClicked(Coordinate coordinate) {
+    public void onTileReveal(Coordinate coordinate) {
         if (board == null || inputLocked || isGameOver) {
             return;
         }
@@ -143,8 +143,8 @@ public class GameState {
             }
         }
 
-        if (onBoardUpated != null) {
-            onBoardUpated.run();
+        if (onBoardUpdated != null) {
+            onBoardUpdated.run();
         }
 
         checkWinCondition();
@@ -211,8 +211,8 @@ public class GameState {
             // 3. UNLOCK THE INPUT
             inputLocked = false;
 
-            if (onBoardUpated != null) {
-                onBoardUpated.run();
+            if (onBoardUpdated != null) {
+                onBoardUpdated.run();
             }
         });
 
@@ -242,7 +242,6 @@ public class GameState {
         boolean allMatched = true;
 
         for (Tile tile : board.getAllTiles()) {
-            // Check if non-mines are revealed
             if (tile == null) {
                 continue;
             }
@@ -260,7 +259,6 @@ public class GameState {
             this.isGameOver = true;
             this.stopwatch.stop();
 
-            // --- BROADCAST WIN ---
             GameEventMessenger.getInstance().triggerGameOver(true);
         }
     }

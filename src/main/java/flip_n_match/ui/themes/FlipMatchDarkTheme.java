@@ -9,6 +9,7 @@ public class FlipMatchDarkTheme extends FlatDarkLaf {
         installLafInfo(NAME, FlipMatchDarkTheme.class);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean setup() {
         return setup(new FlipMatchDarkTheme());
     }

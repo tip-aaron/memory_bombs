@@ -1,7 +1,6 @@
 package flip_n_match.ui.pages;
 
 import java.awt.event.ActionListener;
-import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,7 +18,6 @@ import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;
 
 public class PageGameMenu extends Page {
-    private JPanel headerContainer;
 
     private JButton resumeButton;
     private JButton exitButton;
@@ -33,7 +31,7 @@ public class PageGameMenu extends Page {
         setLayout(new MigLayout("flowx, wrap, gapy 64, insets 0, al center center", "[grow, fill]"));
 
         // Header Section (Title)
-        headerContainer = new JPanel(new MigLayout("flowy, gapy 8, insets 0, al center center", "[grow, fill]"));
+        JPanel headerContainer = new JPanel(new MigLayout("flowy, gapy 8, insets 0, al center center", "[grow, fill]"));
         JLabel title = new JLabel("MENU");
 
         title.putClientProperty(FlatClientProperties.STYLE_CLASS, "h00");
@@ -78,7 +76,7 @@ public class PageGameMenu extends Page {
             }
         };
     }
-
+//
     @Override
     public void open() {
         resumeButton.addActionListener(resumeActionListener);

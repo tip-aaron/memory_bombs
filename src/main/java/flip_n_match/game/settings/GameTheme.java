@@ -1,4 +1,4 @@
-package flip_n_match.config;
+package flip_n_match.game.settings;
 
 import lombok.Getter;
 
@@ -18,3 +18,4 @@ public enum GameTheme {
         return this.name();
     }
 }
+

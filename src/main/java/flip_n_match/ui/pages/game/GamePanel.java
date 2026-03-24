@@ -1,8 +1,9 @@
 package flip_n_match.ui.pages.game;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import flip_n_match.config.UserSettings;
 import flip_n_match.game.*;
+import flip_n_match.game.settings.GameDifficulty;
+import flip_n_match.game.settings.UserSettings;
 import flip_n_match.ui.icons.SVGIconUIColor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,14 +54,14 @@ public class GamePanel extends JPanel {
                 Coordinate coordinate = Coordinate.builder().col(c).row(r).build();
                 JButton btn = new JButton();
                 ActionListener listener = ignored -> {
-                    gameState.onTileClicked(coordinate);
+                    gameState.onTileReveal(coordinate);
                     refresh();
                 };
                 MouseListener mouseListener = new MouseAdapter() {
                     @Override
                     public void mouseReleased(MouseEvent e) {
                         if (SwingUtilities.isRightMouseButton(e) && btn.isEnabled()) {
-                            gameState.onTileRightClicked(coordinate);
+                            gameState.onTileFlag(coordinate);
                             refresh();
                         }
                     }
@@ -190,11 +191,13 @@ public class GamePanel extends JPanel {
 
         // LIFECYCLE FIX: Check if we are resuming or starting fresh
         if (gameState.getBoard() == null || gameState.isGameOver() || gameState.getBoard().getRows() == 0) {
+            GameDifficulty gameDifficulty = settings.getGameplay().difficulty().get();
+
             // 1. START FRESH
             gameState.initializeGame(
-                    settings.getCurrentDifficulty().getRows(),
-                    settings.getCurrentDifficulty().getCols(),
-                    settings.getCurrentDifficulty().getMineCount()
+                    gameDifficulty.getRows(),
+                    gameDifficulty.getCols(),
+                    gameDifficulty.getMineCount()
             );
             buildGrid();
         }

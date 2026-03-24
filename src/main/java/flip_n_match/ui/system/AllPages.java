@@ -19,9 +19,7 @@ public class AllPages {
     }
 
     public static void clear() {
-        getInstance().pagesMap.forEach((key, val) -> {
-            val.destroy();
-        });
+        getInstance().pagesMap.forEach((key, val) -> val.destroy());
 
         getInstance().pagesMap.clear();
     }
@@ -31,9 +29,7 @@ public class AllPages {
     }
 
     public static void initPage(final Page page) {
-        SwingUtilities.invokeLater(() -> {
-            page.init();
-        });
+        SwingUtilities.invokeLater(page::init);
     }
 
     public static Page getPage(final Class<? extends Page> cls) {

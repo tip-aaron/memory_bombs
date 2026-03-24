@@ -15,6 +15,7 @@ public class GameEventMessenger {
         if (instance == null) {
             instance = new GameEventMessenger();
         }
+
         return instance;
     }
 

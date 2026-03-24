@@ -1,8 +1,8 @@
 package flip_n_match.ui.pages.game;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import flip_n_match.config.UserSettings;
 import flip_n_match.constants.Metadata;
+import flip_n_match.game.settings.UserSettings;
 import flip_n_match.ui.icons.SVGIconUIColor;
 import flip_n_match.ui.pages.PageGameMenu;
 import flip_n_match.ui.system.Navigator;
@@ -15,6 +15,7 @@ public class Header extends JPanel {
     private final JLabel stopwatchText;
     private final JLabel difficultyText;
     private final JLabel mineCountText;
+    private final JLabel tilesFlaggedText;
     private final JButton menuBtn;
     private final ActionListener menuBtnListener = ignored -> Navigator.navigate(PageGameMenu.class);
 
@@ -26,6 +27,7 @@ public class Header extends JPanel {
                 JLabel.LEFT);
         difficultyText = new JLabel("Difficulty: Easy");
         mineCountText = new JLabel("Mines: N/A");
+        tilesFlaggedText = new JLabel("Flagged: N/A");
         menuBtn = new JButton(new SVGIconUIColor("menu.svg", 0.75f, "foreground.primary"));
 
         titleText.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
@@ -36,6 +38,7 @@ public class Header extends JPanel {
         add(difficultyText, "gapx 8px");
         add(stopwatchText, "gapx 8px");
         add(mineCountText, "gapx 8px");
+        add(tilesFlaggedText, "gapx 8px");
         add(menuBtn, "gapleft 64px");
     }
 
@@ -43,12 +46,15 @@ public class Header extends JPanel {
         stopwatchText.setText(text);
     }
 
+    void setMinesFlagged(int minesFlagged) {
+        tilesFlaggedText.setText("Flagged: " + minesFlagged);
+    }
 
     void open() {
         UserSettings settings = UserSettings.getInstance();
 
-        difficultyText.setText("Difficulty: " + settings.getCurrentDifficulty().name());
-        mineCountText.setText("Mine Count: " + settings.getCurrentDifficulty().getMineCount());
+        difficultyText.setText("Difficulty: " + settings.getGameplay().difficulty().get().name());
+        mineCountText.setText("Mine Count: " + settings.getGameplay().difficulty().get().getMineCount());
 
         menuBtn.addActionListener(menuBtnListener);
     }

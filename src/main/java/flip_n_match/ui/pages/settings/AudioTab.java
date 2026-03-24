@@ -1,6 +1,6 @@
 package flip_n_match.ui.pages.settings;
 
-import flip_n_match.config.UserSettings;
+import flip_n_match.game.settings.UserSettings;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -38,26 +38,26 @@ public class AudioTab extends ASettingsTab {
 
     @Override
     public boolean isDirty() {
-        return newMasterVolume != UserSettings.getInstance().getVolume();
+        return newMasterVolume != UserSettings.getInstance().getAudio().masterVolume().get();
     }
 
     @Override
     public void applyChanges() {
         if (isDirty()) {
-            UserSettings.getInstance().setVolume(newMasterVolume);
+            UserSettings.getInstance().getAudio().masterVolume().set(newMasterVolume);
         }
     }
 
     @Override
     public void revertChanges() {
-        newMasterVolume = UserSettings.getInstance().getVolume();
+        newMasterVolume = UserSettings.getInstance().getAudio().masterVolume().get();
 
         masterVolumeSlider.setValue(newMasterVolume);
     }
 
     @Override
     public void loadDefaults() {
-        newMasterVolume = UserSettings.getInstance().getDEFAULT_VOLUME();
+        newMasterVolume = UserSettings.getInstance().getAudio().masterVolume().getDefaultValue();
 
         masterVolumeSlider.setValue(newMasterVolume);
     }
