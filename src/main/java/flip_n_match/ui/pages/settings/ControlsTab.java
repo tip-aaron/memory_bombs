@@ -1,6 +1,7 @@
 package flip_n_match.ui.pages.settings;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import flip_n_match.game.settings.UserSettings;
 
 import javax.swing.*;
 
@@ -31,7 +32,9 @@ public class ControlsTab extends ASettingsTab {
     @Override public void open() {}
     @Override public void close() {}
     @Override public boolean isDirty() { return false; }
-    @Override public void applyChanges() {}
+    @Override public void applyChanges() {
+        UserSettings.getInstance().getControls().notifyListeners();
+    }
     @Override public void revertChanges() {}
     @Override public void loadDefaults() {}
 }

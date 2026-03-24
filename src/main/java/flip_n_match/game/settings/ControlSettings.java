@@ -6,13 +6,18 @@ import lombok.Getter;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
 public class ControlSettings {
     @Getter
     private final Map<GameAction, SettingsProperty<InputBinding>> bindings = new EnumMap<>(GameAction.class);
+
+    // Add a list of callbacks
+    private final List<Runnable> onSettingsChangedListeners = new ArrayList<>();
 
     public ControlSettings(Preferences prefs) {
         bindings.put(GameAction.REVEAL_TILE, new SettingsProperty<>(
@@ -42,5 +47,19 @@ public class ControlSettings {
 
     public SettingsProperty<InputBinding> getAction(GameAction action) {
         return bindings.get(action);
+    }
+
+    public void addChangeListener(Runnable listener) {
+        onSettingsChangedListeners.add(listener);
+    }
+
+    public void removeChangeListener(Runnable listener) {
+        onSettingsChangedListeners.remove(listener);
+    }
+
+    public void notifyListeners() {
+        for (Runnable listener : onSettingsChangedListeners) {
+            listener.run();
+        }
     }
 }
