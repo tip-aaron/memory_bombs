@@ -30,11 +30,11 @@ public class GamePanel extends JPanel {
 
     public GamePanel(GameState gameState) {
         this.gameState = gameState;
-        this.cachedIcons = new HashMap<String, SVGIconUIColor>();
+        this.cachedIcons = new HashMap<>();
     }
 
     public void buildGrid() {
-        removeAll(); // Crucial: clear old buttons if restarting the game
+        removeAll();
 
         Board board = gameState.getBoard();
 

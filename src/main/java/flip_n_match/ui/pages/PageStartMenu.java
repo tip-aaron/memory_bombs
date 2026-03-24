@@ -15,6 +15,7 @@ import flip_n_match.App;
 import flip_n_match.constants.Metadata;
 import flip_n_match.ui.icons.SVGIconUIColor;
 import flip_n_match.ui.pages.game.PageGameMain;
+import flip_n_match.ui.pages.settings.PageSettings;
 import flip_n_match.ui.system.Navigator;
 import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;

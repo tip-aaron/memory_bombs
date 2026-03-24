@@ -6,11 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
-import com.formdev.flatlaf.FlatClientProperties;
-
 import flip_n_match.constants.Metadata;
-import flip_n_match.ui.pages.PageSettings;
-import flip_n_match.ui.system.Page;
 import flip_n_match.ui.system.PageHandler;
 
 public class MainFrame extends JFrame {
