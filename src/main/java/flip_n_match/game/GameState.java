@@ -94,6 +94,10 @@ public class GameState {
         } else if (clickedTile.getStatus() == TileStatus.FLAGGED) {
             clickedTile.setStatus(TileStatus.HIDDEN);
         }
+
+        if (onBoardUpdated != null) {
+            onBoardUpdated.run();
+        }
     }
 
     public void onTileReveal(Coordinate coordinate) {

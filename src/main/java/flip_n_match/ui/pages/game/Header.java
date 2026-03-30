@@ -23,15 +23,13 @@ public class Header extends JPanel {
         setLayout(new MigLayout("insets 0, flowx, al center center", "[]push[][][]push[]"));
 
         JLabel titleText = new JLabel(Metadata.APP_TITLE);
-        stopwatchText = new JLabel("00:00.000", new SVGIconUIColor("timer.svg", 0.75f, "foreground.background"),
-                JLabel.LEFT);
+        stopwatchText = new JLabel("00:00.000", new SVGIconUIColor("timer.svg", 0.75f, "foreground.background"), JLabel.LEFT);
         difficultyText = new JLabel("Difficulty: Easy");
-        mineCountText = new JLabel("Mines: N/A");
+        mineCountText = new JLabel("Mines Left: N/A");
         tilesFlaggedText = new JLabel("Flagged: N/A");
         menuBtn = new JButton(new SVGIconUIColor("menu.svg", 0.75f, "foreground.primary"));
 
         titleText.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
-
         menuBtn.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
 
         add(titleText, "gapright 64px");
@@ -46,15 +44,18 @@ public class Header extends JPanel {
         stopwatchText.setText(text);
     }
 
-    void setMinesFlagged(int minesFlagged) {
-        tilesFlaggedText.setText("Flagged: " + minesFlagged);
+    public void updateMineStats(int flagged, int totalMines) {
+        tilesFlaggedText.setText("Flagged: " + flagged);
+        mineCountText.setText("Mines Left: " + (totalMines - flagged));
     }
 
     void open() {
         UserSettings settings = UserSettings.getInstance();
 
         difficultyText.setText("Difficulty: " + settings.getGameplay().difficulty().get().name());
-        mineCountText.setText("Mine Count: " + settings.getGameplay().difficulty().get().getMineCount());
+
+        int totalMines = settings.getGameplay().difficulty().get().getMineCount();
+        updateMineStats(0, totalMines);
 
         menuBtn.addActionListener(menuBtnListener);
     }
@@ -64,6 +65,7 @@ public class Header extends JPanel {
     }
 
     void destroy() {
-        mineCountText.setText("Mine Count: ");
+        mineCountText.setText("Mines Left: ");
+        tilesFlaggedText.setText("Flagged: ");
     }
 }

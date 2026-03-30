@@ -56,6 +56,21 @@ public class Board {
         return allTiles;
     }
 
+    public int countFlags() {
+        int count = 0;
+
+        for (int r = 0; r < getRows(); ++r) {
+            for (int c = 0; c < getCols(); ++c) {
+                var tile = getTile(Coordinate.builder().col(c).row(r).build());
+                if (tile != null && tile.getStatus() == TileStatus.FLAGGED) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
     private boolean isOutOfBounds(Coordinate coordinate) {
         return coordinate.getRow() < 0 || coordinate.getRow() >= rows ||
                 coordinate.getCol() < 0 || coordinate.getCol() >= cols;
