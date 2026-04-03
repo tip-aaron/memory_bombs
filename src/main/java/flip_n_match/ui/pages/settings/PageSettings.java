@@ -26,6 +26,8 @@ public class PageSettings extends Page {
     private ActionListener saveButtonActionListener;
     private boolean isDirty = false;
 
+    public static Class<? extends Page> previousPage = PageStartMenu.class;
+
     @SuppressWarnings("unchecked")
     private final Class<? extends ASettingsTab>[] tabClasses = new Class[]{
             GameplayTab.class, AppearanceTab.class, ControlsTab.class, AudioTab.class
@@ -224,7 +226,7 @@ public class PageSettings extends Page {
 
             checkDirtyState();
 
-            Navigator.navigate(PageStartMenu.class);
+            Navigator.navigate(previousPage);
         }
     }
 

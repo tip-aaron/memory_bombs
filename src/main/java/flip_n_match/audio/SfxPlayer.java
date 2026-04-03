@@ -26,31 +26,22 @@ public class SfxPlayer extends ABaseAudioPlayer {
     public void play(String resPath) {
         loaderThread.submit(() -> {
             try {
-                // 3. Stop the previously playing sound immediately
                 if (currentClip != null && currentClip.isRunning()) {
                     currentClip.stop();
                 }
 
-                // 4. Fetch the sound from memory, or load it if it's the first time
                 Clip clip = clipCache.get(resPath);
+
                 if (clip == null) {
                     clip = loadAudio(resPath);
                     clipCache.put(resPath, clip);
-
-                    // NOTE: I completely removed the LineListener that called clip.close()!
-                    // If you close() a clip, it is destroyed and must be re-decoded from disk.
-                    // By keeping it open in the cache, it plays instantly next time.
                 }
 
-                // 5. Rewind the sound to the very beginning
                 clip.setFramePosition(0);
-
                 setVolume(clip, globalSfxVolume);
-
-                // 6. Play and track it
                 clip.start();
-                currentClip = clip;
 
+                currentClip = clip;
             } catch (Exception e) {
                 System.err.println("Failed to play SFX: " + resPath);
                 Logger.getLogger(SfxPlayer.class.getName()).log(Level.SEVERE, null, e);

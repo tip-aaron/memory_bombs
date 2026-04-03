@@ -1,5 +1,6 @@
 package flip_n_match.ui.pages.game;
 
+import flip_n_match.audio.AudioManager;
 import flip_n_match.game.GameState;
 import flip_n_match.game.events.GameEventMessenger;
 import flip_n_match.game.settings.UserSettings;
@@ -58,6 +59,8 @@ public class PageGameMain extends Page {
             refreshUI();
 
             if (isWin) {
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.WIN);
+
                 long finalTimeRaw = gameState.getStopwatch().getElapsedSeconds();
                 String difficulty = UserSettings.getInstance().getGameplay().difficulty().get().toString();
 
@@ -79,6 +82,8 @@ public class PageGameMain extends Page {
                 gameState.initializeGame(0, 0, 0);
                 Navigator.navigate(PageLeaderboard.class);
             } else {
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.GAME_OVER);
+
                 JOptionPane.showMessageDialog(this, "Game Over! You hit a mine.", "Game Finished", JOptionPane.INFORMATION_MESSAGE);
                 gameState.clearAndStop();
                 gameState.initializeGame(0, 0, 0);

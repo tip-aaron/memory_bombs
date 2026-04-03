@@ -1,28 +1,38 @@
 package flip_n_match.ui.pages.leaderboard;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import flip_n_match.audio.AudioManager;
 import flip_n_match.game.settings.GameDifficulty;
 import flip_n_match.lib.Scorer;
+import flip_n_match.ui.buttons.AudioButtonWrapper;
 import flip_n_match.ui.icons.SVGIconUIColor;
 import flip_n_match.ui.system.Page;
 import lombok.Getter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PageLeaderboard extends Page {
-    private JButton backToMainMenuBtn;
+    private AudioButtonWrapper backBtnWrapper;
     private JTextField searchField;
+    private JTabbedPane tabbedPane;
 
-    // List to keep track of our generated tabs
     private final List<DifficultyTab> difficultyTabs = new ArrayList<>();
-
     private final ActionListener backBtnListener = new BackToMenuListener();
+
+    private ChangeListener tabClickListener;
+    private MouseMotionAdapter tabHoverListener;
+    private MouseAdapter tabExitedListener;
+    private int lastHoveredTabIndex = -1;
 
     @Override
     public void init() {
@@ -33,10 +43,13 @@ public class PageLeaderboard extends Page {
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel headerPanel = new JPanel(new MigLayout("flowx, insets 0", "[]push[]push[]", "[center]"));
-        backToMainMenuBtn = new JButton("Back", new SVGIconUIColor("arrow-left.svg", 0.75f, "foreground.primary"));
-        backToMainMenuBtn.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
 
-        headerPanel.add(backToMainMenuBtn);
+        backBtnWrapper = new AudioButtonWrapper("Back", new SVGIconUIColor("arrow-left.svg", 0.75f, "foreground.primary"), () -> backBtnListener.actionPerformed(null));
+        JButton backButton = backBtnWrapper.getButton();
+
+        backButton.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
+
+        headerPanel.add(backButton);
         headerPanel.add(title, "gapleft 24px");
         headerPanel.add(new JLabel(""));
 
@@ -45,7 +58,7 @@ public class PageLeaderboard extends Page {
         searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search player by name...");
         searchPanel.add(searchField, "growx");
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         TopThreeBoldRenderer renderer = new TopThreeBoldRenderer();
 
         GameDifficulty[] difficulties = GameDifficulty.class.getEnumConstants();
@@ -57,11 +70,32 @@ public class PageLeaderboard extends Page {
                 difficultyTabs.add(tab);
                 tabbedPane.addTab(difficultyName, tab.getContentPanel());
 
-                // Hook up the search listener to each tab's sorter
                 LeaderboardSearchListener searchListener = new LeaderboardSearchListener(searchField, tab.getSorter(), 1);
                 searchField.getDocument().addDocumentListener(searchListener);
             }
         }
+
+        tabClickListener = e -> AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_CLICK);
+
+        tabHoverListener = new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int currentHover = tabbedPane.indexAtLocation(e.getX(), e.getY());
+                if (currentHover != lastHoveredTabIndex) {
+                    lastHoveredTabIndex = currentHover;
+                    if (currentHover != -1) {
+                        AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_HOVER);
+                    }
+                }
+            }
+        };
+
+        tabExitedListener = new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent e) {
+                lastHoveredTabIndex = -1;
+            }
+        };
 
         add(headerPanel, "growx");
         //add(searchPanel, "growx, wmax 400px, al center");
@@ -70,10 +104,13 @@ public class PageLeaderboard extends Page {
 
     @Override
     public void open() {
-        backToMainMenuBtn.addActionListener(backBtnListener);
+        backBtnWrapper.bind();
+
+        tabbedPane.addChangeListener(tabClickListener);
+        tabbedPane.addMouseMotionListener(tabHoverListener);
+        tabbedPane.addMouseListener(tabExitedListener);
 
         SwingUtilities.invokeLater(() -> {
-            // Refresh data for each tab dynamically
             for (DifficultyTab tab : difficultyTabs) {
                 List<Scorer.ScoreEntry> scores = Scorer.getSortedScores(tab.getDifficulty());
                 tab.updateData(scores);
@@ -83,7 +120,12 @@ public class PageLeaderboard extends Page {
 
     @Override
     public void close() {
-        backToMainMenuBtn.removeActionListener(backBtnListener);
+        backBtnWrapper.unbind();
+
+        tabbedPane.removeChangeListener(tabClickListener);
+        tabbedPane.removeMouseMotionListener(tabHoverListener);
+        tabbedPane.removeMouseListener(tabExitedListener);
+
         searchField.setText("");
     }
 
@@ -138,6 +180,5 @@ public class PageLeaderboard extends Page {
                 cardLayout.show(contentPanel, "TABLE_VIEW");
             }
         }
-
     }
 }

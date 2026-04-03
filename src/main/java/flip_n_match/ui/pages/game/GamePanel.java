@@ -54,7 +54,7 @@ public class GamePanel extends JPanel {
             }
         }
 
-        int MAX_BUTTON_SIZE = 64;
+        int MAX_BUTTON_SIZE = 80;
 
         wrapperPanel.add(gridPanel);
 

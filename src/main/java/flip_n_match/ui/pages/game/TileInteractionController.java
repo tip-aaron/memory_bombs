@@ -86,17 +86,11 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         if (tile == null || tile.getStatus() == TileStatus.HIDDEN || tile.getStatus() == TileStatus.REVEALED) {
             gameState.onTileReveal(coordinate);
 
-            // Re-fetch the tile to check its NEW state after the reveal
             Tile updatedTile = gameState.getBoard().getTile(coordinate);
 
-            // Check win/loss first (assuming your GameState tracks this)
-            if (gameState.isGameOver()) {
-                // If you have a way to check win vs loss in GameState, split this:
+            if (updatedTile instanceof MineTile) {
                 AudioManager.getInstance().playSfx(AudioManager.Sfx.BOMB_REVEAL);
-                AudioManager.getInstance().playSfx(AudioManager.Sfx.GAME_OVER);
-            }
-            // Check for match
-            else if (updatedTile instanceof Tile.Matchable matchable && matchable.getIsMatched()) {
+            } else if (updatedTile instanceof Tile.Matchable matchable && matchable.getIsMatched()) {
                 AudioManager.getInstance().playSfx(AudioManager.Sfx.TILE_MATCHED);
             }
             // Standard reveal
@@ -143,7 +137,6 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
 
     private void executePause() {
         if (!gameState.isGameOver()) {
-            AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_CLICK);
             Navigator.navigate(PageGameMenu.class);
         }
     }

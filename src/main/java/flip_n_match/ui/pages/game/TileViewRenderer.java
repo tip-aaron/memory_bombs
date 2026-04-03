@@ -34,7 +34,7 @@ public class TileViewRenderer {
 
     private void renderFlagged(JButton btn) {
         btn.setText("");
-        btn.setIcon(getIcon("flag.svg", "color.error")); // Use color.error for flags
+        btn.setIcon(getIcon("flag.svg", "foreground.error")); // Use color.error for flags
         btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "flagged");
         btn.setEnabled(true);
     }

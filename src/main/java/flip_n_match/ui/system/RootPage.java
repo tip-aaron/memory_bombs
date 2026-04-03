@@ -14,16 +14,16 @@ public class RootPage extends JPanel implements AudioManager.MusicObserver {
 
     public RootPage() {
         // Changed layout to 1 column, 2 rows: [grow] for content, [40!] fixed for footer
-        setLayout(new MigLayout("fill, insets 0, gap 0", "[grow]", "[grow][40!]"));
+        setLayout(new MigLayout("fill, insets 0, gap 0", "[grow, center]", "[grow][40!]"));
 
-        mainPanel = new JPanel(new MigLayout("fill, insets 16, gap 0", "[grow]", "[grow]"));
+        mainPanel = new JPanel(new MigLayout("fill, insets 16, gap 0", "[grow, center]", "[grow][bottom]"));
 
         // --- Footer Setup ---
-        footerPanel = new JPanel(new MigLayout("fill, insets 0 20", "[grow][right]", "center"));
+        footerPanel = new JPanel(new MigLayout("fill, insets 20 20", "[grow, center]", "[center]"));
         footerPanel.putClientProperty(FlatClientProperties.STYLE_CLASS, "footer");
         footerPanel.setBackground(UIManager.getColor("Panel.background").darker());
 
-        musicStatusLabel = new JLabel("No music playing", new SVGIconUIColor("note.svg", 0.5f, "foreground.background"), JLabel.LEFT);
+        musicStatusLabel = new JLabel("No music playing", new SVGIconUIColor("note.svg", 0.75f, "foreground.background"), JLabel.CENTER);
         musicStatusLabel.putClientProperty(FlatClientProperties.STYLE_CLASS, "mini muted");
 
         footerPanel.add(musicStatusLabel, "growx");
