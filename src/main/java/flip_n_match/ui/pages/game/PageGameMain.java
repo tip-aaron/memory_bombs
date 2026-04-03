@@ -61,7 +61,7 @@ public class PageGameMain extends Page {
             if (isWin) {
                 AudioManager.getInstance().playSfx(AudioManager.Sfx.WIN);
 
-                long finalTimeRaw = gameState.getStopwatch().getElapsedSeconds();
+                long finalTimeRaw = gameState.getStopwatch().getElapsedSeconds() / 1_000_000;
                 String difficulty = UserSettings.getInstance().getGameplay().difficulty().get().toString();
 
                 String playerName = JOptionPane.showInputDialog(
