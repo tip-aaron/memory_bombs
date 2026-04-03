@@ -10,7 +10,12 @@ import flip_n_match.ui.system.Navigator;
 import lombok.Builder;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TileInteractionController extends MouseAdapter implements KeyListener {
     private final GameState gameState;
@@ -73,7 +78,9 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
     private void executeFlag() {
         Tile tile = gameState.getBoard().getTile(coordinate);
 
-        if (gameState.getBoard().countFlags() == UserSettings.getInstance().getGameplay().difficulty().get().getMineCount()) {
+        if (
+                tile != null && tile.getStatus() != TileStatus.FLAGGED &&
+                        gameState.getBoard().countFlags() == UserSettings.getInstance().getGameplay().difficulty().get().getMineCount()) {
             JOptionPane.showMessageDialog(null, "You have flagged all possible mine locations. Please unflag some to flag again.");
 
             return;
@@ -109,30 +116,45 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         Board board = gameState.getBoard();
         int r = coordinate.getRow();
         int c = coordinate.getCol();
-        int flagCount = 0;
 
+        int knownHazardCount = 0;
+        int hiddenCount = 0;
+        List<Coordinate> hiddenNeighbors = new ArrayList<>();
+
+        // 1. Analyze all surrounding neighbors
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
+
                 Coordinate neighbor = Coordinate.builder().row(r + i).col(c + j).build();
                 Tile nTile = board.getTile(neighbor);
-                if (nTile != null && nTile.getStatus() == TileStatus.FLAGGED) {
-                    flagCount++;
+
+                if (nTile != null) {
+                    if (nTile.getStatus() == TileStatus.FLAGGED) {
+                        knownHazardCount++;
+                    } else if (nTile instanceof MineTile && nTile.getStatus() != TileStatus.HIDDEN) {
+                        knownHazardCount++;
+                    }
+                    // Keep track of the remaining ambiguous hidden tiles
+                    else if (nTile.getStatus() == TileStatus.HIDDEN) {
+                        hiddenCount++;
+                        hiddenNeighbors.add(neighbor);
+                    }
                 }
             }
         }
 
-        if (flagCount == requiredFlags) {
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue;
-                    Coordinate neighbor = Coordinate.builder().row(r + i).col(c + j).build();
-                    Tile nTile = board.getTile(neighbor);
-
-                    if (nTile != null && nTile.getStatus() == TileStatus.HIDDEN) {
-                        gameState.onTileReveal(neighbor);
-                    }
-                }
+        // 2. Scenario A: All hazards are known (flagged/revealed). Safely chord the remaining hidden tiles.
+        if (knownHazardCount == requiredFlags) {
+            for (Coordinate hidden : hiddenNeighbors) {
+                gameState.onTileReveal(hidden);
+            }
+        }
+        // 3. Scenario B: The player didn't flag the mines, but revealed/matched all the safe tiles.
+        // If the number of remaining hidden tiles exactly matches the remaining hazards, Auto-Flag them!
+        else if (hiddenCount > 0 && hiddenCount == (requiredFlags - knownHazardCount)) {
+            for (Coordinate hidden : hiddenNeighbors) {
+                gameState.onTileFlag(hidden);
             }
         }
     }

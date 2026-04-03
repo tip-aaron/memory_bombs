@@ -72,6 +72,7 @@ public class TileViewRenderer {
                     btn.setEnabled(true);
                 }
             }
+            // non-existent right now.
             case SpecialTile ignored -> {
                 btn.setText("");
                 btn.setIcon(null);
