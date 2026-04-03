@@ -6,13 +6,14 @@ import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 
 public abstract class ASettingsTab extends JPanel {
     @Setter
     private Runnable dirtyListener;
 
     public ASettingsTab() {
-        setLayout(new MigLayout("fillx, wrap 2, insets 16 0 0 0", "[fill][right]", "[]16[]"));
+        setLayout(new MigLayout("fillx, wrap 2, insets 16 0 0 0", "[grow][right]", "[]16[]"));
     }
 
     protected void notifyDirty() {
@@ -22,16 +23,17 @@ public abstract class ASettingsTab extends JPanel {
     }
 
     protected void addSectionHeader(@NotNull String titleText, String descriptionText) {
-        JPanel container = new JPanel(new MigLayout("fillx, wrap 1, insets 0", "[]", "[]4[]"));
+        JPanel container = new JPanel(new MigLayout("insets 0", "[grow, fill, left]"));
         JLabel title = new JLabel(titleText);
 
         title.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
 
-        container.add(title);
+        container.add(title, "wrap");
 
         if (descriptionText != null && !descriptionText.isEmpty()) {
             JLabel description = new JLabel("<html>" + descriptionText + "</html>");
 
+            description.setMaximumSize(new Dimension(450, Integer.MAX_VALUE));
             description.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted small");
 
             container.add(description);

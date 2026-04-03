@@ -152,7 +152,7 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         }
         // 3. Scenario B: The player didn't flag the mines, but revealed/matched all the safe tiles.
         // If the number of remaining hidden tiles exactly matches the remaining hazards, Auto-Flag them!
-        else if (hiddenCount > 0 && hiddenCount == (requiredFlags - knownHazardCount)) {
+        else if (UserSettings.getInstance().getGameplay().autoFlag().get() && hiddenCount > 0 && hiddenCount == (requiredFlags - knownHazardCount)) {
             for (Coordinate hidden : hiddenNeighbors) {
                 gameState.onTileFlag(hidden);
             }

@@ -13,7 +13,7 @@ public class ControlsTab extends ASettingsTab {
 
         addControlBind("Reveal / Flip Tile", "Left Click");
         addControlBind("Flag Mine", "Right Click");
-        addControlBind("Chord (Reveal Adjacent)", "Middle Click / L+R Click");
+        addControlBind("Chord (Reveal Adjacent)", "Middle Click");
         addControlBind("Pause Game / Menu", "ESC");
     }
 

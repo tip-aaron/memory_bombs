@@ -43,6 +43,8 @@ public class PageSettings extends Page {
             ASettingsTab tab = tabs[i];
             JScrollPane scroller = new JScrollPane(tab);
 
+            scroller.setBorder(null);
+
             tab.setDirtyListener(dirtyCheckListener);
 
             scroller.setBorder(null);
@@ -114,7 +116,7 @@ public class PageSettings extends Page {
     }
 
     private JPanel getHeaderContainer() {
-        JPanel headerContainer = new JPanel(new MigLayout("flowy, gapy 8, insets 0, al center center", "[grow, fill]"));
+        JPanel headerContainer = new JPanel(new MigLayout("flowy, gapy 8, insets 0, al center center", "[grow, fill, center]"));
         JLabel title = new JLabel("SETTINGS");
         JLabel description = new JLabel("<html>Customize your experience of the game.</html>");
 

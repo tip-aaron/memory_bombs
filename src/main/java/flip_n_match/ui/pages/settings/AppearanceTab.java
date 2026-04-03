@@ -18,7 +18,7 @@ public class AppearanceTab extends ASettingsTab {
     public AppearanceTab() {
         super();
 
-        addSectionHeader("Theme & Style", "");
+        addSectionHeader("Theme & Style", "Style your experience");
 
         themeJComboBox = new JComboBox<>(GameTheme.values());
         themeItemListener = new ThemeItemListener();
