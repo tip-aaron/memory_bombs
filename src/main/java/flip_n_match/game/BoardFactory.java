@@ -36,13 +36,17 @@ public class BoardFactory {
         }
 
         Collections.shuffle(memoryCoordinates);
-
         List<String> availableIcons = getRandomizedIcons();
+// Dynamically calculates pairs based on your custom difficulty rules (mineCount / 2)
+        int targetPairs = mineCount / 2;
+
+        // Safety check: Prevent trying to place more pairs than we have safe 0-hazard tiles for
+        int actualPairs = Math.min(targetPairs, memoryCoordinates.size() / 2);
 
         int i = 0;
         int pairIndex = 0;
 
-        while (i < memoryCoordinates.size() - 1) {
+        while (i < actualPairs) {
             String matchId = availableIcons.get(pairIndex % availableIcons.size());
 
             board.setTile(new MemoryTile(memoryCoordinates.get(i), matchId));
@@ -53,8 +57,10 @@ public class BoardFactory {
         }
 
         // if there was an excess tile
-        if (i < memoryCoordinates.size()) {
-            board.setTile(new SpecialTile(memoryCoordinates.get(i)));
+
+        while (i < memoryCoordinates.size()) {
+            board.setTile(new ClueTile(memoryCoordinates.get(i), 0));
+            i++;
         }
 
         return board;

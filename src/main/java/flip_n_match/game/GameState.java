@@ -73,6 +73,18 @@ public class GameState {
         this.clearAndStop();
     }
 
+    public void reset() {
+        clearAndStop();
+        board = null;
+        isGameOver = false;
+        pendingMines = 0;
+        firstFlippedTile = null;
+        inputLocked = false;
+        isFirstClick = true;
+        pendingCols = 0;
+        pendingRows = 0;
+    }
+
     public void start() {
         this.stopwatch.start();
     }

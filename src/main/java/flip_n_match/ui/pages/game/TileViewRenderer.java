@@ -33,8 +33,8 @@ public class TileViewRenderer {
     }
 
     private void renderFlagged(JButton btn) {
-        btn.setText("🚩");
-        btn.setIcon(null);
+        btn.setText("");
+        btn.setIcon(getIcon("flag.svg", "foreground.flagged"));
         btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "flagged");
         btn.setEnabled(true);
     }
@@ -78,7 +78,7 @@ public class TileViewRenderer {
                 btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted");
                 btn.setEnabled(false);
             }
-            case Tile.ClueProvider ignored -> { // Empty clue (0 hazards)
+            case Tile.ClueProvider ignored -> {
                 btn.setText("");
                 btn.setIcon(null);
                 btn.setEnabled(false); // No need to chord an empty tile
@@ -93,7 +93,8 @@ public class TileViewRenderer {
 
     // --- Caching Helpers ---
     private SVGIconUIColor getIcon(String name, String colorKey) {
-        cachedIcons.putIfAbsent(name, new SVGIconUIColor(name, 1f, colorKey));
+        cachedIcons.putIfAbsent(name, new SVGIconUIColor(name, 0.85f, colorKey));
+
         return cachedIcons.get(name);
     }
 
@@ -102,6 +103,7 @@ public class TileViewRenderer {
             icon.setColorKey(newColor);
             return icon;
         }
+
         return getIcon(matchId, newColor);
     }
 }

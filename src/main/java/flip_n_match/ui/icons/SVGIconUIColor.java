@@ -27,6 +27,7 @@ public class SVGIconUIColor extends FlatSVGIcon {
         super(ICONS_BASE_PATH + name, scale);
         this.colorKey = colorKey;
         this.alpha = alpha;
+
         setColorFilter(new ColorFilter(color -> {
             final Color uiColor = UIManager.getColor(getColorKey());
 

@@ -8,7 +8,6 @@ import flip_n_match.ui.pages.PageStartMenu;
 import flip_n_match.ui.pages.leaderboard.PageLeaderboard;
 import flip_n_match.ui.system.Navigator;
 import flip_n_match.ui.system.Page;
-
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,7 @@ public class PageGameMain extends Page {
     GamePanel gamePanel;
 
     public PageGameMain() {
-        setLayout(new MigLayout("gapy 64px, al center top", "[grow, fill]"));
+        setLayout(new MigLayout("gapy 48px, al center top", "[grow, fill]", "[][grow, fill, top]"));
 
         header = new Header();
 
@@ -34,7 +33,7 @@ public class PageGameMain extends Page {
         gamePanel = new GamePanel(gameState);
 
         add(header, "grow, wrap");
-        add(gamePanel);
+        add(gamePanel, "grow, push");
     }
 
     private void refreshUI() {

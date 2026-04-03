@@ -1,7 +1,6 @@
 package flip_n_match.ui.pages.game;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import flip_n_match.constants.Metadata;
 import flip_n_match.game.settings.UserSettings;
 import flip_n_match.ui.icons.SVGIconUIColor;
 import flip_n_match.ui.pages.PageGameMenu;
@@ -20,24 +19,26 @@ public class Header extends JPanel {
     private final ActionListener menuBtnListener = ignored -> Navigator.navigate(PageGameMenu.class);
 
     public Header() {
-        setLayout(new MigLayout("insets 0, flowx, al center center", "[]push[][][]push[]"));
+        setLayout(new MigLayout("insets 0, flowx, al center center", "[33%, left]push[34%, center]push[33%, right]"));
 
-        JLabel titleText = new JLabel(Metadata.APP_TITLE);
-        stopwatchText = new JLabel("00:00.000", new SVGIconUIColor("timer.svg", 0.75f, "foreground.background"), JLabel.LEFT);
+        JPanel middle = new JPanel(new MigLayout("insets 0, flowx, al center center"));
+
+        stopwatchText = new JLabel("00:00.000", new SVGIconUIColor("timer.svg", 1f, "foreground.background"), JLabel.LEFT);
         difficultyText = new JLabel("Difficulty: Easy");
         mineCountText = new JLabel("Mines Left: N/A");
         tilesFlaggedText = new JLabel("Flagged: N/A");
         menuBtn = new JButton(new SVGIconUIColor("menu.svg", 0.75f, "foreground.primary"));
 
-        titleText.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
-        menuBtn.putClientProperty(FlatClientProperties.STYLE_CLASS, "primary");
+        stopwatchText.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
 
-        add(titleText, "gapright 64px");
-        add(difficultyText, "gapx 8px");
-        add(stopwatchText, "gapx 8px");
-        add(mineCountText, "gapx 8px");
-        add(tilesFlaggedText, "gapx 8px");
-        add(menuBtn, "gapleft 64px");
+        stopwatchText.setHorizontalAlignment(JLabel.CENTER);
+
+        add(difficultyText, "gapright 32px");
+        add(middle, "grow");
+        middle.add(stopwatchText, "wrap 1, gapy 24px, span, center");
+        middle.add(mineCountText, "gapright 8px, split 2, center");
+        middle.add(tilesFlaggedText, "");
+        add(menuBtn, "gapleft 32px");
     }
 
     void setStopwatchText(String text) {
