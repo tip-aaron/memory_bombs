@@ -34,14 +34,14 @@ public class TileViewRenderer {
 
     private void renderFlagged(JButton btn) {
         btn.setText("");
-        btn.setIcon(getIcon("flag.svg", "foreground.flagged"));
+        btn.setIcon(getIcon("flag.svg", "color.error")); // Use color.error for flags
         btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "flagged");
         btn.setEnabled(true);
     }
 
     private void renderRevealed(JButton btn, Tile tile) {
+        // Base class applied first
         btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "revealed");
-
         btn.setRequestFocusEnabled(false);
 
         switch (tile) {
@@ -51,38 +51,36 @@ public class TileViewRenderer {
                 btn.setEnabled(false);
             }
             case Tile.ClueProvider clue when !clue.isEmpty() -> {
-                btn.setText(String.valueOf(clue.getAdjacentHazardCount()));
+                int mineCount = clue.getAdjacentHazardCount();
+                btn.setText(String.valueOf(mineCount));
                 btn.setIcon(null);
-                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "foreground.revealed");
 
+                // Combine the base "revealed" style with the specific "numX" color style
+                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "num" + mineCount);
                 btn.setEnabled(true);
             }
             case Tile.Matchable matchable -> {
                 btn.setText("");
 
                 if (matchable.getIsMatched()) {
-                    btn.setIcon(getUpdatedIcon(matchable.getMatchId(), "foreground.success", btn));
-                    btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "matched");
+                    btn.setIcon(getIcon(matchable.getMatchId(), "color.success"));
+                    // Combine styles so it keeps the button shape/background logic
+                    btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "revealed matched");
                     btn.setEnabled(false);
                 } else if (matchable.isSymbolRevealed()) {
-                    btn.setIcon(getUpdatedIcon(matchable.getMatchId(), "foreground.revealed", btn));
+                    // Just revealed, not matched yet
+                    btn.setIcon(getIcon(matchable.getMatchId(), "foreground.revealed"));
                     btn.setEnabled(false);
                 } else {
                     btn.setIcon(null);
                     btn.setEnabled(true);
                 }
             }
-            // non-existent right now.
             case SpecialTile ignored -> {
                 btn.setText("");
                 btn.setIcon(null);
-                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted");
+                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "revealed muted");
                 btn.setEnabled(false);
-            }
-            case Tile.ClueProvider ignored -> {
-                btn.setText("");
-                btn.setIcon(null);
-                btn.setEnabled(false); // No need to chord an empty tile
             }
             default -> {
                 btn.setText("");
@@ -92,19 +90,13 @@ public class TileViewRenderer {
         }
     }
 
-    // --- Caching Helpers ---
+    // --- Fixed Caching Helpers ---
+
     private SVGIconUIColor getIcon(String name, String colorKey) {
-        cachedIcons.putIfAbsent(name, new SVGIconUIColor(name, 0.85f, colorKey));
+        // Use a composite key so red bombs and green bombs don't overwrite each other!
+        String cacheKey = name + "_" + colorKey;
 
-        return cachedIcons.get(name);
-    }
-
-    private SVGIconUIColor getUpdatedIcon(String matchId, String newColor, JButton btn) {
-        if (btn.getIcon() instanceof SVGIconUIColor icon) {
-            icon.setColorKey(newColor);
-            return icon;
-        }
-
-        return getIcon(matchId, newColor);
+        cachedIcons.putIfAbsent(cacheKey, new SVGIconUIColor(name, 0.85f, colorKey));
+        return cachedIcons.get(cacheKey);
     }
 }

@@ -1,5 +1,6 @@
 package flip_n_match.ui.pages.game;
 
+import flip_n_match.audio.AudioManager;
 import flip_n_match.game.*;
 import flip_n_match.game.controls.GameAction;
 import flip_n_match.game.controls.InputBinding;
@@ -27,6 +28,15 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         this.gameState = gameState;
         this.coordinate = coordinate;
         this.refreshCallback = refreshCallback;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        Tile tile = gameState.getBoard().getTile(coordinate);
+
+        if (tile == null || tile.getStatus() == TileStatus.HIDDEN || tile.getStatus() == TileStatus.FLAGGED) {
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_HOVER);
+        }
     }
 
     @Override
@@ -66,11 +76,34 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         return binding != null && binding.type() == type && binding.keyCode() == code;
     }
 
+    // ==========================================
+    // ACTION EXECUTIONS & SOUND TRIGGERS
+    // ==========================================
+
     private void executeReveal() {
         Tile tile = gameState.getBoard().getTile(coordinate);
 
         if (tile == null || tile.getStatus() == TileStatus.HIDDEN || tile.getStatus() == TileStatus.REVEALED) {
             gameState.onTileReveal(coordinate);
+
+            // Re-fetch the tile to check its NEW state after the reveal
+            Tile updatedTile = gameState.getBoard().getTile(coordinate);
+
+            // Check win/loss first (assuming your GameState tracks this)
+            if (gameState.isGameOver()) {
+                // If you have a way to check win vs loss in GameState, split this:
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.BOMB_REVEAL);
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.GAME_OVER);
+            }
+            // Check for match
+            else if (updatedTile instanceof Tile.Matchable matchable && matchable.getIsMatched()) {
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.TILE_MATCHED);
+            }
+            // Standard reveal
+            else {
+                AudioManager.getInstance().playSfx(AudioManager.Sfx.TILE_REVEAL);
+            }
+
             refreshCallback.run();
         }
     }
@@ -78,16 +111,23 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
     private void executeFlag() {
         Tile tile = gameState.getBoard().getTile(coordinate);
 
-        if (
-                tile != null && tile.getStatus() != TileStatus.FLAGGED &&
-                        gameState.getBoard().countFlags() == UserSettings.getInstance().getGameplay().difficulty().get().getMineCount()) {
-            JOptionPane.showMessageDialog(null, "You have flagged all possible mine locations. Please unflag some to flag again.");
+        if (tile != null && tile.getStatus() != TileStatus.FLAGGED &&
+                gameState.getBoard().countFlags() == UserSettings.getInstance().getGameplay().difficulty().get().getMineCount()) {
 
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_CLICK); // General error click
+            JOptionPane.showMessageDialog(null, "You have flagged all possible mine locations. Please unflag some to flag again.");
             return;
         }
 
         if (tile == null || tile.getStatus() != TileStatus.REVEALED) {
+            // Check state BEFORE action to know if we are flagging or unflagging
+            boolean wasFlagged = (tile != null && tile.getStatus() == TileStatus.FLAGGED);
+
             gameState.onTileFlag(coordinate);
+
+            // Play the appropriate sound
+            AudioManager.getInstance().playSfx(wasFlagged ? AudioManager.Sfx.UNFLAG : AudioManager.Sfx.FLAG);
+
             refreshCallback.run();
         }
     }
@@ -103,6 +143,7 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
 
     private void executePause() {
         if (!gameState.isGameOver()) {
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.BUTTON_CLICK);
             Navigator.navigate(PageGameMenu.class);
         }
     }
@@ -121,7 +162,6 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
         int hiddenCount = 0;
         List<Coordinate> hiddenNeighbors = new ArrayList<>();
 
-        // 1. Analyze all surrounding neighbors
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
@@ -134,9 +174,7 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
                         knownHazardCount++;
                     } else if (nTile instanceof MineTile && nTile.getStatus() != TileStatus.HIDDEN) {
                         knownHazardCount++;
-                    }
-                    // Keep track of the remaining ambiguous hidden tiles
-                    else if (nTile.getStatus() == TileStatus.HIDDEN) {
+                    } else if (nTile.getStatus() == TileStatus.HIDDEN) {
                         hiddenCount++;
                         hiddenNeighbors.add(neighbor);
                     }
@@ -144,18 +182,28 @@ public class TileInteractionController extends MouseAdapter implements KeyListen
             }
         }
 
-        // 2. Scenario A: All hazards are known (flagged/revealed). Safely chord the remaining hidden tiles.
+        boolean cascadeTriggered = false;
+
+        // Scenario A
         if (knownHazardCount == requiredFlags) {
             for (Coordinate hidden : hiddenNeighbors) {
                 gameState.onTileReveal(hidden);
+                cascadeTriggered = true;
             }
         }
-        // 3. Scenario B: The player didn't flag the mines, but revealed/matched all the safe tiles.
-        // If the number of remaining hidden tiles exactly matches the remaining hazards, Auto-Flag them!
+        // Scenario B
         else if (UserSettings.getInstance().getGameplay().autoFlag().get() && hiddenCount > 0 && hiddenCount == (requiredFlags - knownHazardCount)) {
             for (Coordinate hidden : hiddenNeighbors) {
                 gameState.onTileFlag(hidden);
+                cascadeTriggered = true;
             }
+        }
+
+        // Play the chord sound ONLY if tiles were actually modified
+        if (cascadeTriggered) {
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.CHORD_CASCADE);
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.BOMB_REVEAL);
+            AudioManager.getInstance().playSfx(AudioManager.Sfx.GAME_OVER);
         }
     }
 }

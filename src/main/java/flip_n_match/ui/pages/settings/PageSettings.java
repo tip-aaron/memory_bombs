@@ -8,10 +8,13 @@ import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PageSettings extends Page {
     private ASettingsTab[] tabs;
@@ -23,34 +26,36 @@ public class PageSettings extends Page {
     private ActionListener saveButtonActionListener;
     private boolean isDirty = false;
 
+    @SuppressWarnings("unchecked")
+    private final Class<? extends ASettingsTab>[] tabClasses = new Class[]{
+            GameplayTab.class, AppearanceTab.class, ControlsTab.class, AudioTab.class
+    };
+    private ChangeListener tabLazyLoader;
+    private JTabbedPane tabbedPane;
+
     @Override
     public void init() {
         setLayout(new MigLayout("flowx, wrap, gapy 64, insets 0, al center center", "[grow, fill]"));
 
         JPanel headerContainer = getHeaderContainer();
         JPanel contentContainer = new JPanel(new MigLayout("flowy, insets 0, al center center", "[grow, fill]"));
-        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-
+        tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
         tabs = new ASettingsTab[4];
-        tabs[0] = new GameplayTab();
-        tabs[1] = new AppearanceTab();
-        tabs[2] = new ControlsTab();
-        tabs[3] = new AudioTab();
 
-        Runnable dirtyCheckListener = this::checkDirtyState;
-
-        for (int i = 0; i < 4; ++i) {
-            ASettingsTab tab = tabs[i];
-            JScrollPane scroller = new JScrollPane(tab);
-
-            scroller.setBorder(null);
-
-            tab.setDirtyListener(dirtyCheckListener);
-
-            scroller.setBorder(null);
-
-            tabbedPane.addTab(tab.getClass().getAnnotation(TabInfo.class).name(), scroller);
+        // Create placeholders
+        for (Class<? extends ASettingsTab> clazz : tabClasses) {
+            tabbedPane.addTab(clazz.getAnnotation(TabInfo.class).name(), new JPanel());
         }
+
+        //satisfy the error even tho it's truly final.
+        JTabbedPane finalTabbedPane = tabbedPane;
+
+        tabLazyLoader = e -> {
+            int index = finalTabbedPane.getSelectedIndex();
+            if (index != -1 && tabs[index] == null) {
+                loadTab(index);
+            }
+        };
 
         JPanel ctrlButtonsContainer = new JPanel(new MigLayout("flowx, insets 0, gapx 8px", "[]push[]16px[]"));
         defaultsButton = new JButton("Defaults", new SVGIconUIColor("reset-default.svg", 1, "foreground.muted"));
@@ -70,7 +75,7 @@ public class PageSettings extends Page {
         separator.setMinimumSize(new Dimension(separator.getMinimumSize().width, 8));
 
         add(headerContainer);
-        add(contentContainer, "w ::720px, center");
+        add(contentContainer, "w ::1280px, center");
         contentContainer.add(tabbedPane, "h 300px::, gapbottom 24px");
         contentContainer.add(separator, "spanx, growx, gapbottom 16px");
         contentContainer.add(ctrlButtonsContainer);
@@ -80,9 +85,41 @@ public class PageSettings extends Page {
         saveButtonActionListener = new SaveButtonActionListener();
     }
 
+    private void loadTab(int index) {
+        try {
+            ASettingsTab tab = tabClasses[index].getDeclaredConstructor().newInstance();
+            tabs[index] = tab;
+
+            JScrollPane scroller = new JScrollPane(tab);
+            scroller.getVerticalScrollBar().setUnitIncrement(16);
+            tab.setDirtyListener(this::checkDirtyState);
+
+            tabbedPane.setComponentAt(index, scroller);
+
+            // Immediate sync for the newly created tab
+            tab.open();
+            tab.revertChanges();
+        } catch (Exception ex) {
+            Logger.getLogger(PageSettings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     @Override
     public void open() {
+        tabbedPane.addChangeListener(tabLazyLoader);
+
+
+        int current = tabbedPane.getSelectedIndex();
+
+        if (tabs[current] == null) {
+            loadTab(current);
+        }
+
         for (ASettingsTab tab : tabs) {
+            if (tab == null) {
+                continue;
+            }
+
             tab.open();
             tab.revertChanges();
         }
@@ -96,7 +133,13 @@ public class PageSettings extends Page {
 
     @Override
     public void close() {
+        tabbedPane.removeChangeListener(tabLazyLoader);
+
         for (ASettingsTab tab : tabs) {
+            if (tab == null) {
+                continue;
+            }
+
             tab.close();
         }
 
@@ -105,8 +148,21 @@ public class PageSettings extends Page {
         saveButton.removeActionListener(saveButtonActionListener);
     }
 
+    @Override
+    public void destroy() {
+        for (ASettingsTab tab : tabs) {
+            tab.destroy();
+        }
+    }
+
     private void checkDirtyState() {
-        boolean anyDirty = Arrays.stream(tabs).anyMatch(ASettingsTab::isDirty);
+        boolean anyDirty = Arrays.stream(tabs).anyMatch((t) -> {
+            if (t == null) {
+                return false;
+            }
+
+            return t.isDirty();
+        });
 
         if (this.isDirty != anyDirty) {
             this.isDirty = anyDirty;
@@ -135,6 +191,10 @@ public class PageSettings extends Page {
         @Override
         public void actionPerformed(ActionEvent e) {
             for (ASettingsTab tab : tabs) {
+                if (tab == null) {
+                    continue;
+                }
+
                 tab.loadDefaults();
             }
 
@@ -155,6 +215,10 @@ public class PageSettings extends Page {
             }
 
             for (ASettingsTab tab : tabs) {
+                if (tab == null) {
+                    continue;
+                }
+
                 tab.revertChanges();
             }
 
@@ -172,6 +236,10 @@ public class PageSettings extends Page {
 
             if (confirmed == JOptionPane.YES_OPTION) {
                 for (ASettingsTab tab : tabs) {
+                    if (tab == null) {
+                        continue;
+                    }
+
                     tab.applyChanges();
                 }
 

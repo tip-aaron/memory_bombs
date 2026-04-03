@@ -13,7 +13,7 @@ public abstract class ASettingsTab extends JPanel {
     private Runnable dirtyListener;
 
     public ASettingsTab() {
-        setLayout(new MigLayout("fillx, wrap 2, insets 16 0 0 0", "[grow][right]", "[]16[]"));
+        setLayout(new MigLayout("fillx, wrap 2, insets 16", "16 [grow][right]", "[top]24[top]"));
     }
 
     protected void notifyDirty() {
@@ -23,12 +23,12 @@ public abstract class ASettingsTab extends JPanel {
     }
 
     protected void addSectionHeader(@NotNull String titleText, String descriptionText) {
-        JPanel container = new JPanel(new MigLayout("insets 0", "[grow, fill, left]"));
+        JPanel container = new JPanel(new MigLayout("insets 16 0", "[grow, fill, left]"));
         JLabel title = new JLabel(titleText);
 
         title.putClientProperty(FlatClientProperties.STYLE_CLASS, "h4");
 
-        container.add(title, "wrap");
+        container.add(title, "wrap, gapbottom 4px");
 
         if (descriptionText != null && !descriptionText.isEmpty()) {
             JLabel description = new JLabel("<html>" + descriptionText + "</html>");
@@ -39,11 +39,15 @@ public abstract class ASettingsTab extends JPanel {
             container.add(description);
         }
 
-        add(container, "span, wrap, gaptop 8, gapbottom 4");
+        add(container, "span, wrap, gaptop 16, gapbottom 16");
     }
 
     public abstract void open();
     public abstract void close();
+
+    public void destroy() {
+        // Does nothing
+    }
     public abstract boolean isDirty();
     public abstract void applyChanges();
     public abstract void revertChanges();

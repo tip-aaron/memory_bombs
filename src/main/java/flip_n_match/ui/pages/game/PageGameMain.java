@@ -15,8 +15,8 @@ import javax.swing.*;
 
 public class PageGameMain extends Page {
     final GameState gameState;
-    Header header;
-    GamePanel gamePanel;
+    final Header header;
+    final GamePanel gamePanel;
 
     public PageGameMain() {
         setLayout(new MigLayout("gapy 48px, al center top", "[grow, fill]", "[][grow, fill, top]"));
@@ -24,9 +24,7 @@ public class PageGameMain extends Page {
         header = new Header();
 
         gameState = new GameState(
-                str -> SwingUtilities.invokeLater(() -> {
-                    if (header != null) header.setStopwatchText(str);
-                }),
+                str -> SwingUtilities.invokeLater(() -> header.setStopwatchText(str)),
                 () -> SwingUtilities.invokeLater(this::refreshUI)
         );
 

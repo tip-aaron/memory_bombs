@@ -62,19 +62,6 @@
       <artifactId>lombok</artifactId>
       <version>1.18.42</version>
     </dependency>
-    <!-- ===== STRINGS ===== -->
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-      <version>1.14.0</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.11.0</version>
-    </dependency>
     <!-- ===== ANNOTATIONS ===== -->
     <dependency>
       <groupId>org.jetbrains</groupId>
@@ -87,6 +74,13 @@
       <groupId>io.github.classgraph</groupId>
       <artifactId>classgraph</artifactId>
       <version>4.8.179</version>
+    </dependency>
+    <!-- ===== AUDIO ===== -->
+    <dependency>
+      <groupId>com.googlecode.soundlibs</groupId>
+      <artifactId>mp3spi</artifactId>
+      <version>1.9.5.4</version>
+      <scope>compile</scope>
     </dependency>
     <!-- ===== TESTS ===== -->
     <dependency>
@@ -137,7 +131,7 @@
                 <include>pom.xml</include>
               </includes>
 
-              <sortPom></sortPom>
+              <sortPom/>
               <!-- has its own section below -->
 
             </pom>
@@ -149,7 +143,7 @@
             <java>
               <!-- Cleanthat will refactor your code, but it may break your style: apply it before
               your formatter -->
-              <cleanthat></cleanthat>
+              <cleanthat/>
               <googleJavaFormat>
                 <version>1.26.0</version>
                 <style>GOOGLE</style>
@@ -183,9 +177,9 @@
                 <order>\#,java,javax,org,com</order>
               </importOrder>
 
-              <removeUnusedImports></removeUnusedImports>
+              <removeUnusedImports/>
 
-              <formatAnnotations></formatAnnotations>
+              <formatAnnotations/>
 
               <indent>
                 <tabs>true</tabs>

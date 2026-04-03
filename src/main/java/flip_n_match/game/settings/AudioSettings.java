@@ -1,13 +1,28 @@
 package flip_n_match.game.settings;
 
+import flip_n_match.audio.AudioManager;
+
 import java.util.prefs.Preferences;
 
-public record AudioSettings(SettingsProperty<Integer> masterVolume) {
-    public AudioSettings(Preferences masterVolume) {
-        this(new SettingsProperty<>(
-                "app.audio.volume.master",
-                75,
-                masterVolume
-        ));
+
+public record AudioSettings(
+        SettingsProperty<Integer> masterVolume,
+        SettingsProperty<Integer> sfxVolume,
+        SettingsProperty<Integer> musicVolume,
+        SettingsProperty<Boolean> sfxEnabled,
+        SettingsProperty<Boolean> musicEnabled,
+        SettingsProperty<AudioManager.Music> selectedMusic,
+        SettingsProperty<AudioManager.Sfx> selectedSfx
+) {
+    public AudioSettings(Preferences prefs) {
+        this(
+                new SettingsProperty<>("app.audio.volume.master", 25, prefs),
+                new SettingsProperty<>("app.audio.volume.sfx", 100, prefs),
+                new SettingsProperty<>("app.audio.volume.music", 25, prefs),
+                new SettingsProperty<>("app.audio.enabled.sfx", true, prefs),
+                new SettingsProperty<>("app.audio.enabled.music", true, prefs),
+                new SettingsProperty<>("app.audio.music.track", AudioManager.Music.FINAL_BOSS, prefs),
+                new SettingsProperty<>("app.audio.sfx.track", AudioManager.Sfx.BUTTON_CLICK, prefs)
+        );
     }
 }

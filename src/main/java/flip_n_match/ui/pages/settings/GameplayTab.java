@@ -14,10 +14,9 @@ import java.awt.event.ItemListener;
 public class GameplayTab extends ASettingsTab {
     private final JComboBox<GameDifficulty> difficultyJComboBox;
     private final ItemListener difficultyItemListener;
-    private GameDifficulty chosenDifficulty;
-
     private final JCheckBox autoFlagCheckBox;
     private final ItemListener autoFlagItemListener;
+    private GameDifficulty chosenDifficulty;
     private boolean chosenAutoFlag;
 
     public GameplayTab() {
@@ -38,13 +37,13 @@ public class GameplayTab extends ASettingsTab {
         autoFlagItemListener = new AutoFlagItemListener();
         JLabel autoFlagDesc = new JLabel("<html>Automatically flag mines around a numbered tile when possible.</html>");
 
-        autoFlagDesc.putClientProperty(FlatClientProperties.STYLE_CLASS, "small muted");
+        autoFlagDesc.putClientProperty(FlatClientProperties.STYLE_CLASS, "mini muted");
         autoFlagDesc.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
 
         add(container);
         add(autoFlagCheckBox);
 
-        container.add(new JLabel("Auto Flag: "), "wrap, gapy 4px");
+        container.add(new JLabel("Auto Flag: "), "wrap, gapbottom 4px");
         container.add(autoFlagDesc);
 
         revertChanges();

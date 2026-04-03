@@ -1,9 +1,8 @@
 package flip_n_match.ui.system;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.SwingUtilities;
 
 public class AllPages {
     private static AllPages instance;
@@ -18,11 +17,13 @@ public class AllPages {
         return instance;
     }
 
-    public static void clear() {
-        getInstance().pagesMap.forEach((key, val) -> val.destroy());
-
-        getInstance().pagesMap.clear();
-    }
+// --Commented out by Inspection START (4/3/26, 6:24 PM):
+//    public static void clear() {
+//        getInstance().pagesMap.forEach((key, val) -> val.destroy());
+//
+//        getInstance().pagesMap.clear();
+//    }
+// --Commented out by Inspection STOP (4/3/26, 6:24 PM)
 
     public static void removePage(final Class<? extends Page> cls) {
         getInstance().pagesMap.remove(cls);
