@@ -4,12 +4,18 @@ on:
   push:
     tags:
       - "v*"
+
 permissions:
   contents: write
-  
+
 jobs:
   build-release:
-    runs-on: ubuntu-latest
+    # This matrix runs the job 3 times on 3 different operating systems
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -25,9 +31,47 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean package
 
-      - name: Create GitHub Release
+      - name: Prepare jpackage input
+        shell: bash
+        # We move the JAR into a clean 'input' folder so jpackage doesn't bundle the rest of the target folder
+        run: |
+          mkdir jpackage-input
+          cp target/*.jar jpackage-input/app.jar
+
+      - name: Build Standalone App (jpackage)
+        shell: bash
+        # --type app-image creates a folder with your app + the bundled JRE (perfect for itch.io)
+        run: |
+          jpackage \
+            --type app-image \
+            --name "FlipNMatch" \
+            --input jpackage-input \
+            --main-jar app.jar \
+            --dest jpackage-dest
+
+      # ---- OS SPECIFIC ZIPPING ----
+      # itch.io expects portable zip files, but each OS packages the App Image slightly differently.
+
+      - name: Zip the output (Windows)
+        if: matrix.os == 'windows-latest'
+        run: Compress-Archive -Path jpackage-dest\FlipNMatch\* -DestinationPath FlipNMatch-Windows.zip
+
+      - name: Zip the output (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd jpackage-dest/FlipNMatch
+          zip -r ../../FlipNMatch-Linux.zip .
+
+      - name: Zip the output (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd jpackage-dest
+          # macOS apps are technically folders ending in .app. 'ditto' zips them safely so Mac doesn't break them.
+          ditto -c -k --sequesterRsrc --keepParent FlipNMatch.app ../FlipNMatch-macOS.zip
+
+      - name: Create/Update GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: target/*.jar
+          files: FlipNMatch-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
