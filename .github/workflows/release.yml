@@ -102,6 +102,6 @@ jobs:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: |
           # The format is username/game-slug:channel
-          ./butler push builds/FlipNMatch-Windows.zip hinode_codes/flip-and-match:windows
-          ./butler push builds/FlipNMatch-Linux.zip hinode_codes/flip-and-match:linux
-          ./butler push builds/FlipNMatch-macOS.zip hinode_codes/flip-and-match:mac
+          ./butler push builds/FlipNMatch-Windows.zip hinode-codes/flip-and-match:windows
+          ./butler push builds/FlipNMatch-Linux.zip hinode-codes/flip-and-match:linux
+          ./butler push builds/FlipNMatch-macOS.zip hinode-codes/flip-and-match:mac
