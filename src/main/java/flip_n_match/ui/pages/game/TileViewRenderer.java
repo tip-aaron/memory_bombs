@@ -1,7 +1,6 @@
 package flip_n_match.ui.pages.game;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import flip_n_match.game.SpecialTile;
 import flip_n_match.game.Tile;
 import flip_n_match.game.TileStatus;
 import flip_n_match.ui.icons.SVGIconUIColor;
@@ -75,12 +74,6 @@ public class TileViewRenderer {
                     btn.setIcon(null);
                     btn.setEnabled(true);
                 }
-            }
-            case SpecialTile ignored -> {
-                btn.setText("");
-                btn.setIcon(null);
-                btn.putClientProperty(FlatClientProperties.STYLE_CLASS, "revealed muted");
-                btn.setEnabled(false);
             }
             default -> {
                 btn.setText("");

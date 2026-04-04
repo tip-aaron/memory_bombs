@@ -10,7 +10,6 @@ import flip_n_match.ui.pages.leaderboard.PageLeaderboard;
 import flip_n_match.ui.system.Navigator;
 import flip_n_match.ui.system.Page;
 import net.miginfocom.swing.MigLayout;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -61,7 +60,7 @@ public class PageGameMain extends Page {
             if (isWin) {
                 AudioManager.getInstance().playSfx(AudioManager.Sfx.WIN);
 
-                long finalTimeRaw = gameState.getStopwatch().getElapsedSeconds() / 1_000_000;
+                long finalTimeSeconds = Scorer.convertToSeconds(gameState.getStopwatch().getElapsedSeconds());
                 String difficulty = UserSettings.getInstance().getGameplay().difficulty().get().toString();
 
                 String playerName = JOptionPane.showInputDialog(
@@ -73,8 +72,11 @@ public class PageGameMain extends Page {
 
                 if (playerName != null) {
                     if (playerName.trim().isEmpty()) playerName = "Anonymous";
-                    Scorer.saveScore(playerName, finalTimeRaw, difficulty);
-                    String rankMsg = getRankMsg(playerName, finalTimeRaw, difficulty);
+
+                    Scorer.saveScore(playerName, finalTimeSeconds, difficulty);
+
+                    int rank = Scorer.getRank(playerName, finalTimeSeconds, difficulty);
+                    String rankMsg = (rank > 0) ? "\nYou are currently in place #" + rank + " for " + difficulty + " difficulty!" : "";
                     JOptionPane.showMessageDialog(this, "Score saved for " + playerName + "!" + rankMsg, "Saved", JOptionPane.INFORMATION_MESSAGE);
                 }
 
@@ -90,19 +92,6 @@ public class PageGameMain extends Page {
                 Navigator.navigate(PageStartMenu.class);
             }
         }));
-    }
-
-    private static @NotNull String getRankMsg(String playerName, long finalTimeRaw, String difficulty) {
-        java.util.List<Scorer.ScoreEntry> scores = Scorer.getSortedScores(difficulty);
-        int rank = -1;
-        for (int i = 0; i < scores.size(); i++) {
-            Scorer.ScoreEntry entry = scores.get(i);
-            if (entry.name().equals(playerName) && entry.timeValue() == finalTimeRaw) {
-                rank = i + 1;
-                break;
-            }
-        }
-        return (rank > 0) ? "\nYou are currently in place #" + rank + " for " + difficulty + " difficulty!" : "";
     }
 
     @Override

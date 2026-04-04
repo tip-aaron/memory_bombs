@@ -158,10 +158,6 @@ public class ButtonTile {
                     button.setEnabled(true);
                 }
             }
-            case SpecialTile ignored -> {
-                button.putClientProperty(FlatClientProperties.STYLE_CLASS, "muted");
-                button.setEnabled(false);
-            }
             case Tile.ClueProvider ignored -> {
                 button.setText("");
                 button.setEnabled(false);

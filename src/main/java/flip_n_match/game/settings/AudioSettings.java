@@ -16,8 +16,8 @@ public record AudioSettings(
 ) {
     public AudioSettings(Preferences prefs) {
         this(
-                new SettingsProperty<>("app.audio.volume.master", 25, prefs),
-                new SettingsProperty<>("app.audio.volume.sfx", 100, prefs),
+                new SettingsProperty<>("app.audio.volume.master", 20, prefs),
+                new SettingsProperty<>("app.audio.volume.sfx", 75, prefs),
                 new SettingsProperty<>("app.audio.volume.music", 25, prefs),
                 new SettingsProperty<>("app.audio.enabled.sfx", true, prefs),
                 new SettingsProperty<>("app.audio.enabled.music", true, prefs),

@@ -150,7 +150,6 @@ public class GameState {
                         matchable.setSymbolRevealed(true);
                         handleMatchable(matchable);
                     }
-                    case SpecialTile specialTile -> specialTile.activateSpecialAbility();
                     default -> {
                     }
                 }
