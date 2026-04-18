@@ -21,7 +21,7 @@ public record AudioSettings(
                 new SettingsProperty<>("app.audio.volume.music", 25, prefs),
                 new SettingsProperty<>("app.audio.enabled.sfx", true, prefs),
                 new SettingsProperty<>("app.audio.enabled.music", true, prefs),
-                new SettingsProperty<>("app.audio.music.track", AudioManager.Music.FINAL_BOSS, prefs),
+                new SettingsProperty<>("app.audio.music.track", AudioManager.Music.EIGHT_BIT_NIGHTSHADE, prefs),
                 new SettingsProperty<>("app.audio.sfx.track", AudioManager.Sfx.BUTTON_CLICK, prefs)
         );
     }

@@ -143,13 +143,7 @@ public class AudioManager {
         EIGHT_BIT_UNDERCOOKED("music/8-bit_Undercooked.mp3"),
         EIGHT_BIT_MAZE("music/8-bit_MAZE.mp3"),
         EIGHT_BIT_A_NIGHT_OF_DIZZY_SPELLS("music/8-bit_A_Night_of_Dizzy_Spells.mp3"),
-        EIGHT_BIT_POWERUP("music/8-bit_Powerup.mp3"),
-        SOUKAITEI("music/Soukaitei.mp3"),
-        MINESWEEPER_PLUS("music/minesweeper_plus.mp3"),
-        FINAL_BOSS("music/final_boss.mp3"),
-        FINAL_BOSS_2("music/final_boss_2.mp3"),
-        FINAL_BOSS_3("music/final_boss_3.mp3"),
-        SWEEPING("music/sweeping.mp3");
+        EIGHT_BIT_POWERUP("music/8-bit_Powerup.mp3");
 
         private final String fileName;
 
